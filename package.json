@@ -1,0 +1,27 @@
+{
+  "name": "rover",
+  "version": "0.1.0",
+  "description": "web server to control the roving web cam",
+  "main": "rover.js",
+  "scripts": {
+    "test": "node rover.js"
+  },
+  "private": true,
+  "dependencies": {
+      "connect": "*", "socket.io": "0.9.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "/home/samlu/git/rover.git/"
+  },
+  "keywords": [
+    "rover",
+    "raspberry",
+    "handyboard",
+    "robot",
+    "web",
+    "cam"
+  ],
+  "author": "Samuel Lu",
+  "license": "BSD"
+}

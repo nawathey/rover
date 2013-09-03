@@ -1,4 +1,4 @@
-var port = 8080;
+var port = 8088;
 
 var app = require('connect');
 app.createServer()
@@ -18,6 +18,7 @@ var router = function(req, res) {
   switch (url_parts.pathname) {
     case '/date': date(req, res); break;
     case '/still': still(req, res); break;
+    case '/stillFile': stillFile(req, res); break;
     default: display_404(url_parts.pathname, req, res);
   }
 }
@@ -34,5 +35,21 @@ var sys = require('sys'),
 var date = function(req, res) {
   exec("date", function (error, stdout, stderr) {
     res.write("date is " + stdout)
+    res.end();
+  })
+}
+
+var stillFile = function(req, res) {
+  exec('raspistill -n -t 500 -o public/image.jpg', function (error, stdout, stderr) {
+    res.writeHead(302, {'Location': 'image.jpg'});
+    res.end();
+  })
+}
+
+var still = function(req, res) {
+  exec('raspistill -n -t 500 -o -', {maxBuffer:10000*1024}, function (error, stdout, stderr) {
+    res.shouldKeepAilve - false;
+    res.writeHead(200, {'Content-Type': 'image/jpeg'});
+    res.end(stdout);
   })
 }
