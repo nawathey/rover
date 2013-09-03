@@ -8,11 +8,11 @@
   },
   "private": true,
   "dependencies": {
-      "connect": "*", "socket.io": "0.9.6"
+      "connect": "*", "socket.io": "*", "serialport" : "*"
   },
   "repository": {
     "type": "git",
-    "url": "/home/samlu/git/rover.git/"
+    "url": "/home/s8mlu/rover.git/"
   },
   "keywords": [
     "rover",
