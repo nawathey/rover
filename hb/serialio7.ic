@@ -1,0 +1,181 @@
+/*****************************************************************************/
+/*                                                                           */
+/*  serialio.c      ;low-level serial I/O for the Handy Board                */
+/*                  ;also works with the 6.270 board                         */
+/*                                                                           */
+/*  by                                                                       */
+/*                                                                           */
+/*  Dr. Fred G. Martin                                                       */
+/*  Learning and Epistemology Group                                          */
+/*  Media Laboratory                                                         */
+/*  Massachusetts Institute of Technology                                    */
+/*  fredm@media.mit.edu                                                      */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  VERSION HISTORY:                                                         */
+/*                                                                           */
+/*  Whenever the program is updated, record it here.  Add new version info   */
+/*  to the top of this list, so the newest version is always first.          */
+/*                                                                           */
+/*          28 Oct 2005         ;Added timeout selections and support for    */
+/*                              ;Interactive C versions after 4.3. Changes   */
+/*                              ;by Mark T. Tomczak (mtomczak@andrew.cmu.edu)*/
+/*                                                                           */
+/*  1.0     16 May 1997         ;initial code by Fred G. Martin              */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  PUBLIC FUNCTIONS:                                                        */
+/*                                                                           */
+/*  These functions may be used freely by user programs.                     */
+/*                                                                           */
+/*  void disable_pcode_serial()     ;disable board handshaking with IC       */
+/*                                  ;on the host computer, allowing user     */
+/*                                  ;programs to receive serial data         */
+/*                                                                           */
+/*  void enable_pcode_serial()      ;enable board handshaking with IC on     */
+/*                                  ;the host computer                       */
+/*                                                                           */
+/*   int serial_putchar(int timeout, int c) ;send a serial character.        */
+/*                                          ;Specify a timeout. Returns      */
+/*                                  ;true if character was sent before       */
+/*                                  ;timeout, false otherwise                */
+/*                                                                           */
+/*  int serial_getchar(int timeout,int *dest) ;read a serial character.      */
+/*                                            ;Specify a timeout; returns    */
+/*                                            ;true if character was         */
+/*                                            ;retrieved                     */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  PUBLIC GLOBAL VARIABLES:                                                 */
+/*                                                                           */
+/*  These global variables may be accessed freely by user programs.  Any     */
+/*  restrictions on their use (e.g., flags which are read-only) should be    */
+/*  noted here.  It is suggested that global variables be named in all       */
+/*  capital letters, to avoid confusion with local varibles which are        */
+/*  defined within functions.                                                */
+/*                                                                           */
+/*      None.                                                                */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  PRIVATE FUNCTIONS:                                                       */
+/*                                                                           */
+/*  These are internal functions which have no public entry points, and      */
+/*  which user programs should not access directly.  It is suggested that    */
+/*  private functions be named with a leading underscore (_), to avoid       */
+/*  confusion with user-defined functions which might have the same name.    */
+/*                                                                           */
+/*      None.                                                                */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  PRIVATE GLOBAL VARIABLES:                                                */
+/*                                                                           */
+/*  These are internal global variables which user programs should not       */
+/*  access directly.  It is suggested that private global variables be       */
+/*  named in all capital letters with a leading underscore (_), to avoid     */
+/*  confusion with user-defined global variables which might have the same   */
+/*  name.                                                                    */
+/*                                                                           */
+/*      None.                                                                */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  EXTERNAL LIBRARY FILE DEPENDENCIES:                                      */
+/*                                                                           */
+/*  Any external functions or variables which are used but not defined in    */
+/*  this file should be noted here.  List the external library filename,     */
+/*  the library function, and the local calling function.                    */
+/*                                                                           */
+/*      None.                                                                */
+/*                                                                           */
+/*****************************************************************************/
+
+
+/*****************************************************************************/
+/*                                                                           */
+/*                        global variable declarations                       */
+/*                                                                           */
+/*****************************************************************************/
+
+/* declare global variables here */
+int magic_val_0;    /* pcode value 1 for serial interrupt handler */
+int magic_val_1;    /* pcode value 2 for serial interrupt handler */
+int serial_stolen=0;/* if 1, serial has been commandeered by my code */
+
+
+
+/*****************************************************************************/
+/*                                                                           */
+/*                            function declarations                          */
+/*                                                                           */
+/*****************************************************************************/
+
+
+void disable_pcode_serial()     /* disable board handshaking with IC   */
+/* on the host computer, allowing user */
+/* programs to receive serial data     */
+{
+    if(serial_stolen==1)
+      return;
+    serial_stolen=1;
+    
+    /* store the values the serial board keeps */
+    /* this code taken from forum topic:
+       http://www.kipr.org/boards/viewtopic.php?t=168&sid=2c3428269845e6a4152dbd05125e6b06 */    
+    magic_val_0=peek(0x102b);
+    magic_val_1=peek(0x102d);
+    
+    /* clobber magic values... am I killing an interrupt table
+       here? Is that why it works? Hard to say without learning
+       68hc11 assembler */
+    poke(0x102b,0x30);
+    poke(0x102d,0x0c); 
+    poke(0x3c, 1);
+}
+
+/*****************************************************************************/
+
+void enable_pcode_serial()      /* enable board handshaking with IC on */
+/* the host computer                   */
+{
+    /* it would be a BAD thing to call this when it is
+       not initialized */
+    if(serial_stolen==0)
+      return;
+    serial_stolen = 0;
+    
+    /* restore magic numbers */
+    poke (0x102b,magic_val_0);
+    poke (0x102d,magic_val_1);
+    poke(0x3c, 0);
+}
+
+/*****************************************************************************/
+
+int serial_putchar(int timeout,int c)      /* send a serial character.*/
+{
+    long outtime=mseconds()+(long)(timeout);     /* wait until it's okay to send */
+    while (!(peek(0x102e) & 0x80))
+      if(mseconds() > outtime)          
+        return(0);
+    poke(0x102f, c);                    /* send the character */
+    return(1);
+}
+
+/*****************************************************************************/
+
+int serial_getchar(int timeout, int *dest)            /* read a serial character.  */
+{
+    long outtime=mseconds() + (long)(timeout);
+    while (!(peek(0x102e) & 0x20))           /* wait until a character arrives */
+      if(mseconds() > outtime)
+        return(0);
+    *dest= (peek(0x102f));              /* return it as an int */
+    return (1);
+}
+
+/*****************************************************************************/

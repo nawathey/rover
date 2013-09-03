@@ -1,0 +1,177 @@
+/*****************************************************************************/
+/*                                                                           */
+/*  debug_serialio.c    ;debug version of low-level serial I/O               */
+/*                      ;for the Handy Board                                 */
+/*                      ;also works with the 6.270 board                     */
+/*                      ;doesn't require external serial link to test conio  */
+/*                                                                           */
+/*  by                                                                       */
+/*                                                                           */
+/*  Dr. Richard F. Drushel                                                   */
+/*  Department of Biology                                                    */
+/*  Case Western Reserve University                                          */
+/*  Biology 300                                                              */
+/*  2080 Adelbert Road                                                       */
+/*  Cleveland, Ohio  44106-7080  U.S.A.                                      */
+/*  rfd@po.cwru.edu                                                          */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  VERSION HISTORY:                                                         */
+/*                                                                           */
+/*  Whenever the program is updated, record it here.  Add new version info   */
+/*  to the top of this list, so the newest version is always first.          */
+/*                                                                           */
+/*  1.0     18 May 1997         ;initial code by Richard F. Drushel          */
+/*                              ;modified from Fred G. Martin's serialio.c   */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  PUBLIC FUNCTIONS:                                                        */
+/*                                                                           */
+/*  These functions may be used freely by user programs.                     */
+/*                                                                           */
+/*  void disable_pcode_serial()     ;disable board handshaking with IC       */
+/*                                  ;on the host computer, allowing user     */
+/*                                  ;programs to receive serial data         */
+/*                                                                           */
+/*  void enable_pcode_serial()      ;enable board handshaking with IC on     */
+/*                                  ;the host computer                       */
+/*                                                                           */
+/*  void serial_putchar(int c)      ;send a serial character.  Note:  the    */
+/*                                  ;program hangs until the character is    */
+/*                                  ;sent!  There is no timeout!             */
+/*                                  ;debug version:  does a printf()         */
+/*                                                                           */
+/*  int serial_getchar()            ;read a serial character.  Note:  the    */
+/*                                  ;program hangs until a character is      */
+/*                                  ;received!  There is no timeout!         */
+/*                                  ;debug version:  reads from BUFFER[]     */
+/*                                                                           */
+/*  init_serial(char s[])           ;fill debug BUFFER with a desired        */
+/*                                  ;string, which serial_getchar() will     */
+/*                                  ;retrieve characters from beginning at   */
+/*                                  ;current INDEX.  This function sets      */
+/*                                  ;INDEX=0.  Note:  unless you fill BUFFER */
+/*                                  ;with multiple comma- or newline-        */
+/*                                  ;delimited strings, you'll have to call  */
+/*                                  ;this function before every cgetxxx(),   */
+/*                                  ;or you'll get the array access out-of-  */
+/*                                  ;bounds runtime error.                   */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  PUBLIC GLOBAL VARIABLES:                                                 */
+/*                                                                           */
+/*  These global variables may be accessed freely by user programs.  Any     */
+/*  restrictions on their use (e.g., flags which are read-only) should be    */
+/*  noted here.  It is suggested that global variables be named in all       */
+/*  capital letters, to avoid confusion with local varibles which are        */
+/*  defined within functions.                                                */
+/*                                                                           */
+/*  char BUFFER[256]                ;debug serial read buffer                */
+/*  int INDEX                       ;index of next character to retrieve     */
+/*                                  ;from BUFFER[] with serial_getchar()     */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  PRIVATE FUNCTIONS:                                                       */
+/*                                                                           */
+/*  These are internal functions which have no public entry points, and      */
+/*  which user programs should not access directly.  It is suggested that    */
+/*  private functions be named with a leading underscore (_), to avoid       */
+/*  confusion with user-defined functions which might have the same name.    */
+/*                                                                           */
+/*      None.                                                                */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  PRIVATE GLOBAL VARIABLES:                                                */
+/*                                                                           */
+/*  These are internal global variables which user programs should not       */
+/*  access directly.  It is suggested that private global variables be       */
+/*  named in all capital letters with a leading underscore (_), to avoid     */
+/*  confusion with user-defined global variables which might have the same   */
+/*  name.                                                                    */
+/*                                                                           */
+/*      None.                                                                */
+/*                                                                           */
+/*****************************************************************************/
+/*                                                                           */
+/*  EXTERNAL LIBRARY FILE DEPENDENCIES:                                      */
+/*                                                                           */
+/*  Any external functions or variables which are used but not defined in    */
+/*  this file should be noted here.  List the external library filename,     */
+/*  the library function, and the local calling function.                    */
+/*                                                                           */
+/*      None.                                                                */
+/*                                                                           */
+/*****************************************************************************/
+
+
+/*****************************************************************************/
+/*                                                                           */
+/*                        global variable declarations                       */
+/*                                                                           */
+/*****************************************************************************/
+
+/* declare global variables here */
+
+char BUFFER[256];       /* debug serial input buffer */
+int INDEX=0;            /* current index into BUFFER[] */
+
+/*****************************************************************************/
+/*                                                                           */
+/*                            function declarations                          */
+/*                                                                           */
+/*****************************************************************************/
+
+void disable_pcode_serial()     /* disable board handshaking with IC   */
+                                /* on the host computer, allowing user */
+                                /* programs to receive serial data     */
+{
+    poke(0x3c, 1);
+}
+
+/*****************************************************************************/
+
+void enable_pcode_serial()      /* enable board handshaking with IC on */
+                                /* the host computer                   */
+{
+    poke(0x3c, 0);
+}
+
+/*****************************************************************************/
+
+void serial_putchar(int c)      /* send a serial character.  Note:  the */
+                                /* program hangs until the character is */
+                                /* sent!  There is no timeout!          */
+{
+    printf("%c",c);             /* debug version does printf() */
+}
+
+/*****************************************************************************/
+
+int serial_getchar()            /* read a serial character.  Note:  the */
+                                /* program hangs until a character is   */
+                                /* received!  There is no timeout!      */
+
+{
+    return BUFFER[INDEX++];     /* debug version fetches char from BUFFER[] */
+}
+
+/*****************************************************************************/
+
+void init_serial(char s[])      /* debug initialization of serial BUFFER[] */
+
+{
+    int i=0;
+    while (s[i] != 0)           /* until end of string */
+        BUFFER[i]=s[i++];       /* copy characters into BUFFER[] */
+    BUFFER[i++]=10;             /* put a linefeed at the end for safety */
+    BUFFER[i]=0;                /* terminal null so we can printf */
+    INDEX=0;                    /* point at the start of BUFFER[] */
+}
+
+/*****************************************************************************/
+

@@ -1,0 +1,620 @@
+/*
+  Author: Sam Lu - 9/2/2013
+
+  Based on Test program for Handy Board - hbtest.ic by Fred G. Martin (fredm@media.mit.edu)    
+*/
+
+#define TESTNUM 9
+
+#use "serialio7.ic"
+#use "servo_a7.icb"
+#use "servo_a5.icb"
+
+int ver = 5;
+
+void 
+menu()
+{
+    char a[TESTNUM][16]={"Menu: Serial","Menu: Motors","Menu: Servo5","Menu: Servo7","Menu: Digitals",
+          "Menu: Analogs", "Menu: Knob", "Menu: IR", "Menu: Sonar"};
+    ao();
+    tone(700.,.5);
+    printf("\nSquawky Rover %d Press START\n", ver);
+    while(!start_button());
+    while(1) {
+        int sel;
+        beep();        
+        printf("Turn knob to    select test\n");
+        sleep(1.0);
+        sel = select_string(a,TESTNUM);
+        if (sel >= 0)
+          menuCommand(sel);
+    }
+    printf("Done\n");
+}
+
+void timer(int n)
+{
+    int i, j;
+    float f;
+    reset_system_time();
+    for (i = 0; i < n; i++) {
+    };
+    f = (float)mseconds();
+    printf("%f",f);
+}
+
+void main()
+{
+    // start_process(menu(),255);
+    start_process(serialConsole(0),255);
+}
+
+int menuCommand(int sel)
+{
+    switch(sel) {
+        case 0: serialConsole(1); break;
+        case 1: testmotors(); break;
+        case 2: testservo5(); break;
+        case 3: testservo7(); break;
+        case 4: testdigitals(); break;
+        case 5: testanalogs(); break;
+        case 6: testknob(); break;
+        case 7: testir(); break;
+        case 8: testsonar(); break;
+        default: return 1;
+    }
+    return 0;
+}
+
+/* integer to string */
+int its (int i, char s[])
+{
+    int c, d, x, n;
+    n = _array_size(s) - 1; // leave room for \0
+    while (n > 0) {
+        s[c++] = (i % 10) + '0';
+        n--; 
+        i /= 10;
+        if (i == 0) break;
+    }
+    s[c] = '\0';
+    while (d < --c) { // flip digits
+        x = s[d]; s[d] = s[c]; s[c] = x;
+        d++;
+    }
+    return n; // Amount of space left...
+}
+
+int serial_put(char buf[])
+{
+    int i, rc;
+    int n = _array_size(buf);
+    while ((i < n) && buf[i])
+      rc += serial_putchar(100, buf[i++]);
+    return rc;
+}
+
+/*
+// get a string until '\n' or max 
+int serial_get(char buf[], int max)
+{
+    int i, rc, c;
+    while (i < max) {
+        rc = serial_getchar(100, &c);
+        if (rc == 1) { // got a character
+            //tone(1200., .1);
+            if (c == 13) {// got \n
+                buf[i] = 0;
+                break;
+            }
+            buf[i++] = c;
+        }
+    }
+    serial_put(buf); // echo it back
+    return i;
+}
+*/
+// get a string until '\n' or max buffer
+// NOT USED because the buffer keeps being overrun even with hog_processor
+/*
+int serial_get(char buf[])
+{
+    int i, j, c;
+    int n = _array_size(buf);
+    while (i < n) {
+        while (!(peek(0x102e) & 0x20));           // wait until a character arrives 
+        c = peek(0x102f);              // return it as an int  
+        if (c == '.') {
+            hog_processor();
+        } else {    
+            if (c == 13) {  // got \r
+                buf[i] = 0;
+                break;
+            }
+            buf[i++] = c;
+        }
+    }
+    serial_put(buf);
+    return i;
+}
+*/
+
+#define BUFLEN 32
+char buf[BUFLEN];
+
+int isDigit(int x) { return x >= '0' && x <= '9'; }
+
+void doSerialReady() { printf("%d>\n", analog(BATTERY_PORT)); serial_putchar(100, '>'); tone(1100.,.05); tone(1150.,.1); }
+void doSerialPutNum(int cnt) {
+    char s[BUFLEN]; 
+    its(cnt, s); 
+    serial_put("\r\n["); serial_put(s); serial_put("]"); 
+}
+void doSerialInvalidCmd(int cmdChar) { tone(300., .5); printf("\nErr:%c Valid:fblrapt:", cmdChar);}
+
+int SERVO_MIN=1800;
+int SERVO_MAX=6400;
+int SERVO_MID = (SERVO_MIN + SERVO_MAX) / 2;
+
+int servoLimit(int i) {
+    if (i < SERVO_MIN) i = SERVO_MIN;
+    if (i > SERVO_MAX) i = SERVO_MAX;
+    return i;
+}
+
+void servoInit(int i) { servo_a5_init(i); servo_a7_init(i); }
+
+int getServoPan() { return servo_a7_pulse; }
+int setServoPan(int i) { servo_a7_pulse = servoLimit(i); return servo_a7_pulse; }
+int getServoTilt() { return servo_a5_pulse; }
+int setServoTilt(int i) { servo_a5_pulse = servoLimit(i); return servo_a5_pulse; }
+
+void
+serialConsole(int invokedFromMenu)
+{
+    int i, gotChar, cnt, err, cmdChar;
+    printf("Serail console  HoldSTOP to end\n");
+    servoInit(1);
+    setServoPan(SERVO_MID); // center it
+    setServoTilt(SERVO_MID); // center it
+    sleep(1.);
+    disable_pcode_serial();
+    gotChar = 1;
+    while (!stop_button()) {
+        err = 0;
+        if (gotChar) doSerialReady();
+        gotChar = serial_getchar(50, &cmdChar);
+        if (gotChar) {
+            //start_process(doSerialResponse(cnt++));
+            if (isDigit(cmdChar)) {
+                tone(800., .2);
+                err = menuCommand(cmdChar-'0');
+                while (stop_button()); // wait for stop button to be released
+            }
+            else {
+                err = carCommand(cmdChar);
+            }
+            if (err) 
+              doSerialInvalidCmd(cmdChar);
+            else 
+              serial_putchar(100, cmdChar); // echo the command
+        } else {
+            ao();
+        }
+    }
+    enable_pcode_serial();
+    servoInit(0);
+    
+    if (! invokedFromMenu)
+      menu();
+}
+
+int BATTERY_PORT = 2; // analog port that measures 1/2 of the motor battery voltage
+
+int power = 50; // default mid point between 0 to 100
+int TURN_POWER = 100; // for turning, we need max power
+
+void leftFwd(int p) { motor(3, p); motor(2, p); }
+void rightFwd(int p) { motor(1, p); motor(0, p); }
+void leftBack(int p) { motor(3, -p); motor(2, -p); }
+void rightBack(int p) { motor(1, -p); motor(0, -p); }
+
+int STEP = (SERVO_MIN + SERVO_MAX) / 10;
+int servoDelta(int x, int c) { 
+    if (c == 'm') return SERVO_MID; 
+    if (c == 'l') return x-STEP; 
+    if (c == 'r') return x+STEP; 
+    return 0; 
+}
+
+int carCommand(int cmdChar)
+{
+    int pChar, err = 0;
+    if (cmdChar == 'x') { 
+        if (serial_getchar(1000, &pChar))
+          power = (pChar-'0'+1)*10;
+        else 
+          err = 1;
+    }
+    else if (cmdChar == 'f') { leftFwd(power); rightFwd(power); }
+    else if (cmdChar == 'b') { leftBack(power); rightBack(power); }
+    else if (cmdChar == 'r') { leftFwd(TURN_POWER); rightBack(TURN_POWER); }
+    else if (cmdChar == 'l') { leftBack(TURN_POWER); rightFwd(TURN_POWER); }
+    else if (cmdChar == 'o') { ao(); }
+    else if (cmdChar == 'a') { doSerialPutNum(analog(BATTERY_PORT)); }
+    else if (cmdChar == 'p') { 
+        if (serial_getchar(1000, &pChar)) {
+            setServoPan(servoDelta(getServoPan(), pChar));
+        }
+        else 
+          err = 1;
+    }
+    else if (cmdChar == 't') { 
+        if (serial_getchar(1000, &pChar)) {
+            setServoTilt(servoDelta(getServoTilt(), pChar));
+        }
+        else 
+          err = 1;
+    }
+    else 
+      err = 1;
+    return err;
+}
+
+void
+testmotors(void)
+{
+    printf("Motor test, HoldSTOP to end    \n");
+    while (!stop_button()) {
+        int i;
+        for (i= 0; (!stop_button() && (i< 2)); i++) {
+            motor(i,70); msleep(250L);
+            off(i);
+            motor(i+2,70); msleep(250L);
+            off(i+2);
+        }
+        for (i= 0; (!stop_button() && (i< 2)); i++) {
+            motor(i,-70); msleep(250L);
+            off(i);
+            motor(i+2,-70); msleep(250L);
+            off(i+2);
+        }
+    }
+}
+int knobToPulse() { return (255-knob()) * 40; }
+
+void 
+testservo5(void)
+{
+    servo_a5_init(1);
+    while(!stop_button()) {
+        printf("Activated Servo5Pulse=%d\n", setServoTilt(knobToPulse()));
+        msleep(200L);
+    }
+    servo_a5_init(0);
+}
+
+void 
+testservo7(void)
+{
+    servo_a7_init(1);
+    while(!stop_button()) {
+        printf("Activated Servo7Pulse=%d\n", setServoPan(knobToPulse()));
+        msleep(200L);
+    }
+    servo_a7_init(0);
+}
+
+void 
+testservoHB(void)
+{
+    int i;
+    printf("Attach Servos   Press START\n");
+    while(!start_button());
+    init_expbd_servos(1);
+    while(!stop_button()) 
+      for (i=0;(!stop_button() && i<4000);i=i+100) {
+          printf("Hold STOP to end Servo=%d\n",i);
+          servo0=servo1=servo2=servo3=servo4=servo5=i;
+          msleep(50L);
+      }
+    init_expbd_servos(0);
+}
+
+void
+testdigitals(void)
+{
+    printf("Digital inputs  STOP to end\n");
+    sleep(1.0);
+    printf("Turn knob to    select port\n");
+    sleep(1.0);
+    while (!stop_button()) {
+        /* Get the value of the knob.  The digital port numbering is 7-15 */
+        int val = knob_int_value(6, 15);
+        
+        if(val == 6) {   /* show all */
+            int i;
+            printf("Ports 15 ...  7       ");
+            for (i=15; i>6; i--)
+              if (digital(i)) printf("1");
+              else printf("0");
+            printf("\n");
+        }
+        else {
+            printf("Port %d: %d\n", val, digital(val));
+        }
+        msleep(100L);
+    }
+}
+
+void
+testknob(void)
+{
+    while (!stop_button()) {
+        printf("Turn knob; STOP to end -> %d\n", knob());
+        msleep(100L);
+    }
+}
+
+void
+testsonar(void)
+{
+    while (!stop_button()) {
+        printf("Test sonar; STOP to end -> %d\n", sonar());
+        msleep(100L);
+    }
+} 
+
+void
+testanalogs(void)
+{
+    printf("Analog ins;     STOP to end\n");
+    sleep(1.0);
+    printf("Turn knob to    select port\n");
+    sleep(1.0);
+    while (!stop_button()) {
+        /* Get the value of the knob.  The A/D numbering is 2-6, then 
+    16-31.  Since this is discontinuous, get continuous number
+    between 2 and 22, and then add 9 to any number > 6 */
+        int val = knob_int_value(2, 22);
+        
+        if(val>6){
+            val = val + 9;
+        }
+        
+        printf("Port %d: %d\n", val, analog(val));
+        msleep(100L);
+    }
+}
+
+
+void hb_ir_transmit_on()
+{
+    bit_set(0x1000,0b01000000);
+}
+
+void hb_ir_transmit_off()
+{
+    bit_clear(0x1000,0b01000000);
+}
+
+void blinkIR(float x)
+{
+    hb_ir_transmit_on();
+    sleep(x);
+    hb_ir_transmit_off();
+    sleep(x);
+}
+
+void testir()
+{
+    printf("Blinking IR xmit STOP to stop\n");
+    while(!stop_button())
+      blinkIR(.1);
+}
+
+/****************************** hbmenu.c ********************************/
+/* Menu functions which also allow variables to be set via the knob
+   and selection buttons  
+
+   Version 1.0 
+   Written for MIT 6.270 contest by Anne Wright 11/14/1991 
+
+   Version 2.0
+   Converted for Handy Board for Botball by Anne Wright 1/13/2001
+*/
+
+/* abstractions for chosen_button */
+#define NEITHER_B 0
+#define START_B  1
+#define STOP_B  2
+
+/* abstractions for wait_button */
+#define UP_B      3
+#define DOWN_B    4
+#define CYCLE_B   5
+
+/*****************************button routines*************************/
+/* Return minimum of two integers */
+/* defined in cmucam3.ic which is loaded by this file -dpm 1/03 */
+int min(int a,int b)
+{
+    if(a<b)
+      return(a);
+    else
+      return(b);
+}
+
+/* Return minimum of two floats */
+float fmin(float a,float b)
+{
+    if(a<b)
+      return(a);
+    else
+      return(b);
+}
+
+/* Returns which button is depressed using definitions above.  If
+   both are pressed, start has precedence */
+int chosen_button()
+{
+    if(start_button())
+      return START_B;
+    if(stop_button())
+      return STOP_B;
+    return NEITHER_B;
+}  
+
+/* wait until button is depressed(DOWN_B), released(UP_B), or
+   both(CYCLE_B) and return which button if any activated the
+   sequence */
+
+int wait_button(int i)
+{
+    int b;
+    if(i==DOWN_B){
+        while(!(start_button() || stop_button()));
+        return chosen_button();
+    }
+    if (i==UP_B) {
+        b=chosen_button();
+        while(start_button() || stop_button());
+        return b;
+    }
+    while(!(start_button() || stop_button()));
+    b=chosen_button();
+    while(start_button() || stop_button());
+    return b;
+} 
+
+/********************* Knob to Number routines*****************************/
+
+/* Returns an integer value from min_val to max_val based on the current
+   position of the knob */  
+int knob_int_value(int min_val,int max_val)
+{
+    int val, coarseness=(255)/(max_val-min_val),selection;
+    
+    val=min((knob())/coarseness+min_val,max_val);
+    return min(val,max_val);
+}
+
+/* Returns an float value from min_val to max_val based on the current
+   position of the knob */  
+float knob_float_value(float min_val,float max_val)
+{
+    float val, coarseness=(255.)/(max_val-min_val),selection;
+    val=fmin(((float)knob())/coarseness+min_val,max_val);
+    return fmin(val,max_val);
+}
+
+/******************** Menu selection routines ****************************/
+
+/* While waiting for a button press, display the string passed in and
+   the val, the integer value betwen min_val and max_val for the knob.
+   If the button pressed is the start button, returns the final value
+   of val.  If the button pressed is the stop button, returns -1.  */
+int select_int_value(char s[],int min_val,int max_val)
+{
+    int val, button;
+    
+    printf("%s %d to %d\n",s,min_val, max_val);
+    sleep(0.8);
+    
+    /* Wait until no button is pressed */
+    wait_button(UP_B);
+    
+    /* While no button is pressed, display the string passed in and the
+       current value of val */
+    while((button = chosen_button())==NEITHER_B) {
+        val=knob_int_value(min_val,max_val);
+        printf("%s %d\n",s,val);
+        msleep(100L);
+    }
+    
+    /* Wait until no button is pressed */
+    wait_button(UP_B);
+    
+    if(button==STOP_B)
+      return(-1); /** -1 means stop pressed -- do not reset value **/
+    else
+      return(val); /* Stop not pressed, return val */
+}
+
+/* While waiting for a button press, display the string passed in and
+   the val, the float value betwen min_val and max_val for the knob.
+   If the button pressed is the start button, returns the final value
+   of val.  If the button pressed is the stop button, returns -1.  */
+float select_float_value(char s[],float min_val,float max_val)
+{
+    float val;
+    int button;
+    
+    printf("%s %f to %f\n",s,min_val, max_val);
+    sleep(0.8);
+    
+    /* Wait until no button is pressed */
+    wait_button(UP_B);
+    
+    /* While no button is pressed, display the string passed in and the
+       current value of val */
+    while((button = chosen_button())==NEITHER_B) {
+        val=knob_float_value(min_val,max_val);
+        printf("%s %f\n",s,val);
+        msleep(100L);
+    }
+    
+    /* Wait until no button is pressed */
+    wait_button(UP_B);
+    
+    if(button==STOP_B)
+      return(-1.0); /** -1 means stop pressed -- do not reset value **/
+    else
+      return(val); /* Stop not pressed, return val */
+}
+
+/* While waiting for a button press, display the string from the array
+   of strings passed in which corresponds to the current position of
+   the knob (see select_int_value).  If the button pressed is the
+   start button, returns the index of the string selected (0 to n-1).
+   If the button pressed is the stop button, returns -1.  */
+int select_string(char choices[][],int n)
+{
+    int selection,last_selection=-1,button;
+    
+    if(n>_array_size(choices))
+      n=_array_size(choices);
+    
+    
+    /* Wait until no button is pressed */
+    wait_button(UP_B);
+    
+    /* While no button is pressed, display the string from the array
+       of strings passed in which corresponds to the current position
+       of the knob */
+    while((button = chosen_button())==NEITHER_B) {
+        selection=knob_int_value(0,n-1);
+        if(selection!=last_selection) {
+            printf("%s\n",choices[selection]);
+            msleep(150L);
+            last_selection=selection;
+        }
+    }
+    
+    /* Wait until no button is pressed */
+    wait_button(UP_B);
+    
+    if(button==STOP_B)
+      return(-1); /** -1 means stop pressed -- do not reset value **/
+    else
+      return(selection); /* Stop not pressed, return val */
+}
+
+/*
+ * Local variables:
+ *  comment-column: 40
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ * End:
+ */
