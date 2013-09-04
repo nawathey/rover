@@ -1,23 +1,22 @@
 // rover server
 
 var express = require('express'),
+    routes = require('./routes'),
     sio = require('socket.io'),
+    http = require('http'),
     app = express(),
-    io = sio.listen(app);
+    server = http.createServer(app),
+    io = sio.listen(server);
 
-function display404(err, req, res) {
-  res.writeHead(404, {'Content-Type': 'text/html'});
-  res.write('<H1>404 Not Found</H1>');
-  res.write('The page you were looking for: ' + encodeURIComponent(req.url) + ' cannot be found');
-  res.end();
-}
-
-//app.use(express.bodyParser());
-//app.use(express.methodOverride());
-app.use(express.logger('dev'));
-app.use(app.router);
-app.use(express.static('public'));
-app.use(display404);
+app.configure(function() {
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  //app.use(express.bodyParser());
+  //app.use(express.methodOverride());
+  app.use(express.logger('dev'));
+  app.use(express.static(__dirname + '/public'));
+  app.use(app.router);
+});
 
 app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
@@ -57,14 +56,22 @@ var rover = function(req, res) {
   res.send(hb.rover(url_parts.query.cmd));
 };
 
+function display404(err, req, res) {
+  res.writeHead(404, {'Content-Type': 'text/html'});
+  res.write('<H1>404 Not Found</H1>');
+  res.write('The page you were looking for: ' + encodeURIComponent(req.url) + ' cannot be found');
+  res.end();
+}
+
+app.get('/', routes.index);
 app.get('/date', date);
 app.get('/still', still);
 app.get('/stillFile', stillFile);
 app.get('/rover', rover);
+app.get('*', display404);
 
-var httpPort = 8088;
-app.listen(httpPort);
-console.log('web server listening on TCP port ' + httpPort);
+server.listen(8088);
+console.log('Web server listening on port %d in %s mode', server.address().port, app.settings.env);
 
 io.sockets.on('connection', function(socket) {
   socket.emit('status', hb.status()); 
