@@ -1,31 +1,25 @@
 // rover server
 
-var rover = require('./hb.js').rover;
+var hb = require('./hb.js');
 
 var httpPort = 8088;
-var app = require('connect');
-app.createServer()
-  .use(app.logger('dev'))
-  .use(app.static('public'))
-  .use(function(req, res){
-    router(req, res)
-  })
-.listen(httpPort);
+var express = require('express');
+var app = express();
+
 console.log('web server listening on TCP port ' + httpPort);
 
 var url = require('url');
 
-var router = function(req, res) {
-  var url_parts = url.parse(req.url, true);
-  var cmd = url_parts.query.cmd;
-  switch (url_parts.pathname) {
-    case '/date': date(req, res); break;
-    case '/still': still(req, res); break;
-    case '/stillFile': stillFile(req, res); break;
-    case '/rover': res.end(rover(url_parts.query.cmd)); break;
-    default: display_404(url_parts.pathname, req, res);
-  }
-}
+//app.use(express.bodyParser());
+//app.use(express.methodOverride());
+app.use(express.logger('dev'));
+app.use(express.static('public'));
+app.use(app.router);
+app.use(function(err, req, res, next){
+  console.err(err.stack);
+  res.send(500, 'Internal server error');
+});
+
 
 function display_404(url, req, res) {
   res.writeHead(404, {'Content-Type': 'text/html'});
@@ -57,3 +51,15 @@ var still = function(req, res) {
     res.end(stdout);
   })
 }
+
+var rover = function(req, res) {
+  var url_parts = url.parse(req.url, true);
+  res.send(hb.rover(url_parts.query.cmd));
+};
+
+app.get('/date', date);
+app.get('/still', still);
+app.get('/stillFile', stillFile);
+app.get('/rover', rover);
+
+app.listen(8088);
