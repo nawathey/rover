@@ -1,5 +1,4 @@
-.DS_Store
-lib-cov
+*.swp
 *.seed
 *.log
 *.csv
@@ -8,10 +7,14 @@ lib-cov
 *.pid
 *.gz
 
+image*.jpg
+
+.DS_Store
+lib-cov
+tmp
 pids
 logs
 results
 
 npm-debug.log
 node_modules
-image*.jpg

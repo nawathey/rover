@@ -16,34 +16,36 @@ app.configure(function() {
   app.use(express.logger('dev'));
   app.use(express.static(__dirname + '/public'));
   app.use(app.router);
+  app.use(function(err, req, res, next){
+    console.error(err.stack);
+    res.send(500, 'Internal server error!');
+  });
 });
 
-app.configure('development', function() {
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
-app.configure('production', function() {
-  app.use(express.errorHandler());
-});
+app.configure('development', function() { app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); });
+app.configure('production', function() { app.use(express.errorHandler()); });
+
+app.get('/', routes.index);
+app.get('/dt', dt);
+app.get('/still', still);
+app.get('/stillFile', stillFile);
+app.get('/rover', rover);
+app.get('*', function(req, res) { res.send('<H1>404 Not Found</H1>', 404); });
 
 var sys = require('sys'),
     exec = require('child_process').exec;
 
-var date = function(req, res) {
-  exec("date", function (error, stdout, stderr) {
-    res.end("date is " + stdout)
-  })
-}
+function dt(req, res) { exec("date", function (error, stdout, stderr) { res.send("Now it's " + stdout) }) }
 
-var stillFile = function(req, res) {
+function stillFile(req, res) {
   exec('raspistill -n -t 500 -o public/image.jpg', function (error, stdout, stderr) {
     res.writeHead(302, {'Location': 'image.jpg'});
     res.end();
   })
 }
-
-var still = function(req, res) {
+function still(req, res) {
   exec('raspistill -n -t 500 -o -', {maxBuffer:10000*1024}, function (error, stdout, stderr) {
-    res.shouldKeepAilve - false;
+    res.shouldKeepAilve = false;
     res.writeHead(200, {'Content-Type': 'image/jpeg'});
     res.end(stdout);
   })
@@ -51,24 +53,10 @@ var still = function(req, res) {
 
 var url = require('url');
 var hb = require('./hb.js');
-var rover = function(req, res) {
+function rover(req, res) {
   var url_parts = url.parse(req.url, true);
   res.send(hb.rover(url_parts.query.cmd));
 };
-
-function display404(err, req, res) {
-  res.writeHead(404, {'Content-Type': 'text/html'});
-  res.write('<H1>404 Not Found</H1>');
-  res.write('The page you were looking for: ' + encodeURIComponent(req.url) + ' cannot be found');
-  res.end();
-}
-
-app.get('/', routes.index);
-app.get('/date', date);
-app.get('/still', still);
-app.get('/stillFile', stillFile);
-app.get('/rover', rover);
-app.get('*', display404);
 
 server.listen(8088);
 console.log('Web server listening on port %d in %s mode', server.address().port, app.settings.env);
@@ -83,6 +71,5 @@ io.sockets.on('connection', function(socket) {
      case 'right': hb.rover('r'); break;
     }
   });
-
   socket.on('keyup', function(dir){ hb.rover('x'); });
 });

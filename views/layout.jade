@@ -1,4 +1,4 @@
-!!! 5
+doctype 5
 html
   head
     title= title
@@ -10,4 +10,6 @@ html
     script(type='text/javascript', src='/socket.io/socket.io.js')
     script(type='text/javascript', src='/javascripts/script.js')
     
-  body!= body
+  body
+    #content
+      block content
