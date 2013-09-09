@@ -32,8 +32,8 @@ exports.rover = function(cmd) {
 }
 
 function getBatteryLevel() {
-  var x = buf.indexOf('[');
-  var y = buf.indexOf(']');
+  var x = buf.lastIndexOf('[');
+  var y = buf.lastIndexOf(']');
   var lvl = "n/a"; // Math.round(Math.random() *255); 
   if (x != -1 && y != -1 && x < y) {
     lvl =  buf.slice(x+1, y);
