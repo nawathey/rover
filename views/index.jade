@@ -1,7 +1,8 @@
 extends layout
 
 block camera
-  img(id='stream', src='http://192.168.1.35:8080/?action=stream')
+  img(id='stream', src='/stream') 
+  //- http://192.168.1.35:8080/?action=stream')
 
 block joystick
   a.up() f

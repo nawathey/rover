@@ -20,16 +20,20 @@ app.configure(function() {
     console.error(err.stack);
     res.send(500, 'Internal server error!');
   });
-  io.set('log level', 2);
+  io.set('log level', 2); // 2=INFO, 3=DEBUG
 });
 
 app.configure('development', function() { app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); });
 app.configure('production', function() { app.use(express.errorHandler()); });
 
+var streamer = require('./streamer.js');
+streamer.use(http);
+
 app.get('/', routes.index);
 app.get('/dt', dt);
 app.get('/still', still);
 app.get('/stillFile', stillFile);
+app.get('/stream', streamer.stream);
 app.get('/rover', rover);
 app.get('*', function(req, res) { res.send('<H1>404 Not Found</H1>', 404); });
 
@@ -54,6 +58,7 @@ function still(req, res) {
 
 var url = require('url');
 var hb = require('./hb.js');
+
 function rover(req, res) {
   var url_parts = url.parse(req.url, true);
   res.send(hb.rover(url_parts.query.cmd));
@@ -63,7 +68,7 @@ server.listen(8088);
 console.log('Web server listening on port %d in %s mode', server.address().port, app.settings.env);
 
 io.sockets.on('connection', function(socket) {
-  socket.emit('status', hb.status()); // send initial status
+  hb.statusCB = function (o) { socket.emit('status', o); }
   socket.on('keydown', function(dir) {
     switch(dir){
      case 'up': hb.rover('f'); break;
@@ -72,7 +77,7 @@ io.sockets.on('connection', function(socket) {
      case 'right': hb.rover('r'); break;
     }
   });
-  socket.on('keyup', function(dir){
-    socket.emit('status', hb.status()); 
+  socket.on('keyup', function(dir) {
+    hb.rover('a');
   });
 });
