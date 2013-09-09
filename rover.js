@@ -20,6 +20,7 @@ app.configure(function() {
     console.error(err.stack);
     res.send(500, 'Internal server error!');
   });
+  io.set('log level', 2);
 });
 
 app.configure('development', function() { app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); });
@@ -62,7 +63,7 @@ server.listen(8088);
 console.log('Web server listening on port %d in %s mode', server.address().port, app.settings.env);
 
 io.sockets.on('connection', function(socket) {
-  socket.emit('status', hb.status()); 
+  socket.emit('status', hb.status()); // send initial status
   socket.on('keydown', function(dir) {
     switch(dir){
      case 'up': hb.rover('f'); break;
@@ -71,5 +72,7 @@ io.sockets.on('connection', function(socket) {
      case 'right': hb.rover('r'); break;
     }
   });
-  socket.on('keyup', function(dir){ hb.rover('x'); });
+  socket.on('keyup', function(dir){
+    socket.emit('status', hb.status()); 
+  });
 });

@@ -12,6 +12,12 @@ $(function () {
     sIsDown = false,
     dIsDown = false;
 
+  socket.on('status', function(data) {
+    console.log('received status ' + JSON.stringify(data));
+    var volts = data.battery;
+    $('#volts').text(volts);
+  });
+
   $(document).keydown(function(e){
     switch(e.which){
       case KeyEvent.DOM_VK_F:

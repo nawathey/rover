@@ -1,8 +1,15 @@
 extends layout
 
-block content
+block camera
   iframe(src='http://192.168.0.107:8090/?action=stream')
+
+block joystick
   a.up() f
   a.left() l
-  a.down() b
   a.right() r
+  a.down() b
+
+block status
+  img(id='batteryIcon', src='images/batterySmall.png', alt='battery')
+  #volts unknown
+
