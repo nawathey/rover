@@ -2,21 +2,11 @@
   width:660px;
   margin: 0 auto;
 }
-iframe{
+#stream {
   width:640px;
   height:480px;
   border:10px solid #333;
   padding:0;
-}
-
-#status {
-  text-align: center;
-  margin: 0 auto;
-  position: relative;
-  top: -100px;
-  right: -250px;
-  font: bold 20px/20px arial, sans-serif;
-  color: red;
 }
 
 #joystick {
@@ -24,8 +14,8 @@ iframe{
   height: 140px;
   margin: 0 auto;
   position: relative;
-  top: -200px;
-  left: -200px;
+  top: -120px;
+  left: -220px;
 }
 
 a{
@@ -75,3 +65,14 @@ a.active{
   left: 50px;
   position: absolute;
 }
+
+#status {
+  text-align: center;
+  margin: 0 auto;
+  position: relative;
+  top: -250px;
+  right: -250px;
+  font: bold 20px/20px arial, sans-serif;
+  color: red;
+}
+
