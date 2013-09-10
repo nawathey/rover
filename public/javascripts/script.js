@@ -18,8 +18,8 @@ $(function () {
     $('#volts').text(volts);
   });
 
-  $(document).keydown(function(e){
-    switch(e.which){
+  function keyPressed(k){
+    switch(k){
       case KeyEvent.DOM_VK_F:
         if(wIsDown) return;
         wIsDown = true;
@@ -45,10 +45,13 @@ $(function () {
         $('.right').addClass('active');
         break;
     }
+  }
+  $(document).keydown(function(e){
+    keyPressed(e.which);
   });
 
-  $(document).keyup(function(e){
-    switch(e.which){
+  function keyReleased(k){
+    switch(k){
       case KeyEvent.DOM_VK_F:
         if(!wIsDown) return;
         wIsDown = false;
@@ -75,5 +78,14 @@ $(function () {
         break;
     }
   });
+  $(document).keyup(function(e){
+    keyReleased(e.which);
+  });
 
+  $(document).ready(function() {
+    $('.up').click(function() { keyPressed(KeyEvent.DOM_VK_F); keyReleased(KeyEvent.DOM_VK_F); });
+    $('.down').click(function() { keyPressed(KeyEvent.DOM_VK_B); keyReleased(KeyEvent.DOM_VK_B); });
+    $('.left').click(function() { keyPressed(KeyEvent.DOM_VK_L); keyReleased(KeyEvent.DOM_VK_L); });
+    $('.right').click(function() { keyPressed(KeyEvent.DOM_VK_R); keyReleased(KeyEvent.DOM_VK_R); });
+  });
 });
