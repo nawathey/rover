@@ -23,7 +23,7 @@ else	TMPDIR=/tmp/stream
 	mkdir -p $TMPDIR 
 	if 	\ps -ef | grep -v grep | grep raspistill >/dev/null 2>&1
 	then	echo raspitill already running
-	else	nohup raspistill -w 640 -h 480 -q 5 -o $TMPDIR/image.jpg -tl 100 -t 99999999 -n &
+	else	nohup raspistill -w 640 -h 480 -q 5 -o $TMPDIR/image.jpg -tl 100 -t 99999999 -n -th 0:0:0 &
 	fi
 	echo start MJPG streamer using $TMPDIR
 	cd ~/app/mjpg-streamer/mjpg-streamer
