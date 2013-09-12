@@ -1,3 +1,5 @@
+// module called from rover.js to proxy the /stream request to mjpg-streamer
+
 var http;
 
 exports.use = function (o) { http = o; }
@@ -7,7 +9,7 @@ exports.stream = function stream(req, res) {
 
   var options = {
     // host to forward to
-    host:   '192.168.1.35',
+    host:   'localhost',
     // port to forward to
     port:   8080,
     // path to forward to

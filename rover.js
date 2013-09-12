@@ -26,14 +26,14 @@ app.configure(function() {
 app.configure('development', function() { app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); });
 app.configure('production', function() { app.use(express.errorHandler()); });
 
-var streamer = require('./streamer.js');
-streamer.use(http);
+var proxy = require('./proxy.js');
+proxy.use(http);
 
 app.get('/', routes.index);
 app.get('/dt', dt);
 app.get('/still', still);
 app.get('/stillFile', stillFile);
-app.get('/stream', streamer.stream);
+app.get('/stream', proxy.stream);
 app.get('/rover', rover);
 app.get('*', function(req, res) { res.send('<H1>404 Not Found</H1>', 404); });
 
@@ -81,3 +81,6 @@ io.sockets.on('connection', function(socket) {
     hb.rover('a');
   });
 });
+
+var mon = require('./monitor.js');
+mon.start(io);

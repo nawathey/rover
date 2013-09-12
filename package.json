@@ -8,7 +8,7 @@
   },
   "private": true,
   "dependencies": {
-      "express": "*", "socket.io": "*", "serialport" : "*", "jade" : "*"
+      "express": "*", "jade" : "*", "socket.io": "*", "serialport" : "*", "gpio" : "*"
   },
   "repository": {
     "type": "git",
