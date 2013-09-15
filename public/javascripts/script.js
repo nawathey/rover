@@ -44,6 +44,11 @@ $(function () {
         socket.emit('keydown', 'right');
         $('.right').addClass('active');
         break;
+      case KeyEvent.DOM_VK_PERIOD: socket.emit('keydown', 'panMid'); break;
+      case KeyEvent.DOM_VK_LEFT: socket.emit('keydown', 'panLeft'); break;
+      case KeyEvent.DOM_VK_RIGHT: socket.emit('keydown', 'panRight'); break;
+      case KeyEvent.DOM_VK_UP: socket.emit('keydown', 'tiltUp'); break;
+      case KeyEvent.DOM_VK_DOWN: socket.emit('keydown', 'tiltDown'); break;
     }
   };
   $(document).keydown(function(e){

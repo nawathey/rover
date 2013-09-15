@@ -1,17 +1,16 @@
 rover
 =====
 
-Runs on the Raspberry Pi to control the roving web cam with Handy Board.
+Runs on the Raspberry Pi with a Camera Module mounted on top of a mobile platform controlled by Handy Board.
 
 # Installation
 
 Either through forking or by using [npm](http://npmjs.org) (the recommended way):
 
-    npm install connect nodemon
-
+    npm install rover
 
 # Usage
 
-Copy the files onto Raspberry Pi, run
+Install nodejs. Copy the files onto Raspberry Pi, run
 
-    nodemon rover.js
+    node rover.js

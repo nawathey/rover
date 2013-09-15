@@ -67,19 +67,33 @@ function rover(req, res) {
 server.listen(8088);
 console.log('Web server listening on port %d in %s mode', server.address().port, app.settings.env);
 
+var statusInProgress = false; 
+
 io.sockets.on('connection', function(socket) {
+
   hb.statusCB = function (o) { socket.emit('status', o); }
+
   socket.on('keydown', function(dir) {
-    switch(dir){
-     case 'up': hb.rover('f'); break;
-     case 'down': hb.rover('b'); break;
-     case 'left': hb.rover('l'); break;
-     case 'right': hb.rover('r'); break;
+    if (! statusInProgress) {
+      statusInProgress = true;
+      setTimeout( function() { hb.rover('a'); statusInProgress = false; }, 1000);
     }
+    switch(dir) {
+      case 'up': hb.rover('f'); break;
+      case 'down': hb.rover('b'); break;
+      case 'left': hb.rover('l'); break;
+      case 'right': hb.rover('r'); break;
+      case 'panMid': hb.rover('pm'); break;
+      case 'panLeft': hb.rover('pl'); break;
+      case 'panRight': hb.rover('pr'); break;
+      case 'tiltUp': hb.rover('tl'); break;
+      case 'tiltDown': hb.rover('tr'); break;
+    };
   });
+
   socket.on('keyup', function(dir) {
-    hb.rover('a');
   });
+
 });
 
 var mon = require('./monitor.js');

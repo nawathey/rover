@@ -1,11 +1,10 @@
 #camera {
-  width: 660px;
+  width: 1044px;
+  height: 788px;
   margin: 0 auto;
   pointer-events: none;
 }
 #stream {
-  width: 640px;
-  height: 480px;
   border: 10px solid #333;
   border-radius: 5px;
 }
