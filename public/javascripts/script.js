@@ -7,10 +7,10 @@ $(function () {
   };
 
   var socket = io.connect(),
-    wIsDown = false,
-    aIsDown = false,
-    sIsDown = false,
-    dIsDown = false;
+    fPressed = false,
+    lPressed = false,
+    bPressed = false,
+    rPressed = false;
 
   socket.on('status', function(data) {
     console.log('received status ' + JSON.stringify(data));
@@ -21,26 +21,26 @@ $(function () {
   function keyPressed(k){
     switch(k){
       case KeyEvent.DOM_VK_F:
-        if(wIsDown) return;
-        wIsDown = true;
+        if(fPressed) return;
+        fPressed = true;
         socket.emit('keydown', 'up');
         $('.up').addClass('active');
         break;
       case KeyEvent.DOM_VK_L:
-        if(aIsDown) return;
-        aIsDown = true;
+        if(lPressed) return;
+        lPressed = true;
         socket.emit('keydown', 'left');
         $('.left').addClass('active');
         break;
       case KeyEvent.DOM_VK_B:
-        if(sIsDown) return;
-        sIsDown = true;
+        if(bPressed) return;
+        bPressed = true;
         socket.emit('keydown', 'down');
         $('.down').addClass('active');
         break;
       case KeyEvent.DOM_VK_R:
-        if(dIsDown) return;
-        dIsDown = true;
+        if(rPressed) return;
+        rPressed = true;
         socket.emit('keydown', 'right');
         $('.right').addClass('active');
         break;
@@ -58,26 +58,26 @@ $(function () {
   function keyReleased(k){
     switch(k){
       case KeyEvent.DOM_VK_F:
-        if(!wIsDown) return;
-        wIsDown = false;
+        if(!fPressed) return;
+        fPressed = false;
         socket.emit('keyup', 'up');
         $('.up').removeClass('active');
         break;
       case KeyEvent.DOM_VK_L:
-        if(!aIsDown) return;
-        aIsDown = false;
+        if(!lPressed) return;
+        lPressed = false;
         socket.emit('keyup', 'left');
         $('.left').removeClass('active');
         break;
       case KeyEvent.DOM_VK_B:
-        if(!sIsDown) return;
-        sIsDown = false;
+        if(!bPressed) return;
+        bPressed = false;
         socket.emit('keyup', 'down');
         $('.down').removeClass('active');
         break;
       case KeyEvent.DOM_VK_R:
-        if(!dIsDown) return;
-        dIsDown = false;
+        if(!rPressed) return;
+        rPressed = false;
         socket.emit('keyup', 'right');
         $('.right').removeClass('active');
         break;
@@ -87,10 +87,12 @@ $(function () {
     keyReleased(e.which);
   });
 
+  function simulateClick(k) { keyPressed(k); setTimeout(function() {keyReleased(k)}, 200); };
+
   $(document).ready(function() {
-    $('.up').click(function() { keyPressed(KeyEvent.DOM_VK_F); keyReleased(KeyEvent.DOM_VK_F); });
-    $('.down').click(function() { keyPressed(KeyEvent.DOM_VK_B); keyReleased(KeyEvent.DOM_VK_B); });
-    $('.left').click(function() { keyPressed(KeyEvent.DOM_VK_L); keyReleased(KeyEvent.DOM_VK_L); });
-    $('.right').click(function() { keyPressed(KeyEvent.DOM_VK_R); keyReleased(KeyEvent.DOM_VK_R); });
+    $('.up').click(function() { simulateClick(KeyEvent.DOM_VK_F) });
+    $('.down').click(function() { simulateClick(KeyEvent.DOM_VK_B); });
+    $('.left').click(function() { simulateClick(KeyEvent.DOM_VK_L); });
+    $('.right').click(function() { simulateClick(KeyEvent.DOM_VK_R); });
   });
 });
