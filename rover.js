@@ -96,5 +96,10 @@ io.sockets.on('connection', function(socket) {
 
 });
 
-var mon = require('./monitor.js');
-mon.start(io);
+try { 
+  require.resolve('gpio');
+  var mon = require('./monitor.js');
+  mon.start(io);
+} catch(e) {
+  console.log('running without gpio module, monitoring disabled');
+}
