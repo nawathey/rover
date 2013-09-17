@@ -1,14 +1,11 @@
 doctype 5
 html
   head
+    meta(charset="utf-8")
     title= title
     meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
     link(rel='stylesheet', href='/stylesheets/normalize.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-    
-    script(type='text/javascript', src='http://code.jquery.com/jquery-1.7.2.min.js')
-    script(type='text/javascript', src='/socket.io/socket.io.js')
-    script(type='text/javascript', src='/javascripts/script.js')
     
   body
     #camera
@@ -17,3 +14,7 @@ html
       block joystick
     #status
       block status
+      #volts n|a
+    script(type='text/javascript', src='http://code.jquery.com/jquery-1.10.2.min.js')
+    script(type='text/javascript', src='/socket.io/socket.io.js')
+    script(type='text/javascript', src='/javascripts/script.js')
