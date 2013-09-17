@@ -5,6 +5,8 @@
   pointer-events: none;
 }
 #stream {
+  display: block;
+  margin: 20px auto;
   border: 10px solid #333;
   border-radius: 5px;
 }
