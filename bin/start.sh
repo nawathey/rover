@@ -4,8 +4,8 @@
 # sudo vi /etc/default/tmpfs
 #
 
-[[ "$1" ]] && w="$1" || w=480
-[[ "$2" ]] && h="$2" || h=320
+[[ "$1" ]] && w="$1" || w=1024
+[[ "$2" ]] && h="$2" || h=768
 
 # enable LED output port
 gpio export 17 out
