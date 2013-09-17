@@ -7,81 +7,60 @@ $(function () {
   };
 
   var socket = io.connect(),
-    fPressed = false,
-    lPressed = false,
-    bPressed = false,
-    rPressed = false;
+    isDown = new Array();
+
+  for (i = 0; i < 255; i++)
+    isDown[i] = false;
 
   socket.on('status', function(data) {
-    console.log('received status ' + JSON.stringify(data));
+    //console.log('received status ' + JSON.stringify(data));
     var volts = data.battery;
     $('#volts').text(volts);
   });
 
-  function keyPressed(k){
+  function kDown(k, lbl) {
+    if (isDown[k]) return;
+    isDown[k] = true;
+    socket.emit('keydown', lbl);
+    $('.'+lbl).addClass('active');
+  }
+
+  function kUp(k, lbl) {
+    if (!isDown[k]) return;
+    isDown[k] = false;
+    socket.emit('keyup', lbl);
+    $('.'+lbl).removeClass('active');
+  }
+
+  function getLabel(k) {
+    var lbl;
     switch(k){
-      case KeyEvent.DOM_VK_F:
-        if(fPressed) return;
-        fPressed = true;
-        socket.emit('keydown', 'up');
-        $('.up').addClass('active');
-        break;
-      case KeyEvent.DOM_VK_L:
-        if(lPressed) return;
-        lPressed = true;
-        socket.emit('keydown', 'left');
-        $('.left').addClass('active');
-        break;
-      case KeyEvent.DOM_VK_B:
-        if(bPressed) return;
-        bPressed = true;
-        socket.emit('keydown', 'down');
-        $('.down').addClass('active');
-        break;
-      case KeyEvent.DOM_VK_R:
-        if(rPressed) return;
-        rPressed = true;
-        socket.emit('keydown', 'right');
-        $('.right').addClass('active');
-        break;
-      case KeyEvent.DOM_VK_PERIOD: socket.emit('keydown', 'panMid'); break;
-      case KeyEvent.DOM_VK_LEFT: socket.emit('keydown', 'panLeft'); break;
-      case KeyEvent.DOM_VK_RIGHT: socket.emit('keydown', 'panRight'); break;
-      case KeyEvent.DOM_VK_UP: socket.emit('keydown', 'tiltUp'); break;
-      case KeyEvent.DOM_VK_DOWN: socket.emit('keydown', 'tiltDown'); break;
+      case KeyEvent.DOM_VK_F: lbl = 'up'; break;
+      case KeyEvent.DOM_VK_B: lbl = 'down'; break;
+      case KeyEvent.DOM_VK_L: lbl = 'left'; break;
+      case KeyEvent.DOM_VK_R: lbl = 'right'; break;
+      case KeyEvent.DOM_VK_PERIOD: lbl = 'panMid'; break;
+      case KeyEvent.DOM_VK_LEFT: lbl = 'panLeft'; break;
+      case KeyEvent.DOM_VK_RIGHT: lbl = 'panRight'; break;
+      case KeyEvent.DOM_VK_UP: lbl = 'tiltUp'; break;
+      case KeyEvent.DOM_VK_DOWN: lbl = 'tiltDown'; break;
     }
+    return lbl;
+  }
+
+  function keyPressed(k){
+    var lbl = getLabel(k);
+    if (typeof lbl != 'undefined')
+      kDown(k, lbl);
   };
   $(document).keydown(function(e){
     keyPressed(e.which);
   });
 
   function keyReleased(k){
-    switch(k){
-      case KeyEvent.DOM_VK_F:
-        if(!fPressed) return;
-        fPressed = false;
-        socket.emit('keyup', 'up');
-        $('.up').removeClass('active');
-        break;
-      case KeyEvent.DOM_VK_L:
-        if(!lPressed) return;
-        lPressed = false;
-        socket.emit('keyup', 'left');
-        $('.left').removeClass('active');
-        break;
-      case KeyEvent.DOM_VK_B:
-        if(!bPressed) return;
-        bPressed = false;
-        socket.emit('keyup', 'down');
-        $('.down').removeClass('active');
-        break;
-      case KeyEvent.DOM_VK_R:
-        if(!rPressed) return;
-        rPressed = false;
-        socket.emit('keyup', 'right');
-        $('.right').removeClass('active');
-        break;
-    }
+    var lbl = getLabel(k);
+    if (typeof lbl != 'undefined')
+      kUp(k, lbl);
   };
   $(document).keyup(function(e){
     keyReleased(e.which);
@@ -94,5 +73,7 @@ $(function () {
     $('.down').click(function() { simulateClick(KeyEvent.DOM_VK_B); });
     $('.left').click(function() { simulateClick(KeyEvent.DOM_VK_L); });
     $('.right').click(function() { simulateClick(KeyEvent.DOM_VK_R); });
+    $('.panLeft').click(function() { simulateClick(KeyEvent.DOM_VK_LEFT); });
+    $('.panRight').click(function() { simulateClick(KeyEvent.DOM_VK_RIGHT); });
   });
 });
