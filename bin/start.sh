@@ -1,13 +1,15 @@
+#!/bin/bash
+#
 # start the rover server side
 #
 # setup RAMTMP and TMPFS_SIZE by:
 # sudo vi /etc/default/tmpfs
 #
 
-exp=0
-[[ "$1" = "exp" ]] && exp=1 && shift
-[[ "$1" ]] && w="$1" || w=1024
-[[ "$2" ]] && h="$2" || h=768
+exp=1
+[[ "$1" = "file" ]] && exp=0 && shift
+[[ "$1" ]] && w="$1" || w=640
+[[ "$2" ]] && h="$2" || h=480
 
 # enable LED output port
 gpio export 17 out
@@ -23,10 +25,12 @@ fi
 export LD_LIBRARY_PATH=./ 
 
 if	(( exp == 1 )) 	# experimental, does not work
-then	echo start experimental MJPG streamer without file system support
-	cd ~/app/mjpg-streamer-raspi/mjpg-streamer-experimental
-	nohup ./mjpg_streamer -i "input_raspicam.so -d 200 --width $w --height $h" -o "output_http.so -w ./www" &
-
+then	if 	\ps -ef | grep -v grep | grep mjpg_streamer >/dev/null 2>&1
+	then	echo experimental MJPG streamer already running
+	else	echo start experimental MJPG streamer without file system support
+		cd ~/app/mjpg-streamer-raspi/mjpg-streamer-experimental
+		nohup ./mjpg_streamer -i "input_raspicam.so -d 200 --width $w --height $h" -o "output_http.so -w ./www" &
+	fi
 else	TMPDIR=/tmp/stream
 	mkdir -p $TMPDIR 
 	if 	\ps -ef | grep -v grep | grep raspistill >/dev/null 2>&1
