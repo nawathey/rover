@@ -1,43 +1,31 @@
 #camera {
-  width: 1044px;
-  height: 788px;
-  margin: 0 auto;
-  pointer-events: none;
+  width: 90%;
+  height: 80%;
+  padding: 10px;
+  margin: 0px auto;
+  display: flex;
+  position: relative;
 }
 #stream {
   display: block;
-  margin: 20px auto;
+  width: 100%;
+  height: 100%;
+  align-self: center;
   border: 10px solid #333;
   border-radius: 5px;
-}
-
-#pan {
-  opacity: .6;
-  width: 100%;
-  margin: 0 auto;
-  position: relative;
-  top: -400px;
+  pointer-events: none;
 }
 
 .panLeft{
-  top: 30px;
-  left: 220px;
+  top: 50%;
+  left: 40px;
   position: absolute;
 }
 
 .panRight {
-  top: 30px;
-  right: 240px;
+  top: 50%;
+  right: 40px;
   position: absolute;
-}
-
-#joystick {
-  opacity: .6;
-  width: 140px;
-  margin: 0 auto;
-  position: relative;
-  top: -120px;
-  left: -220px;
 }
 
 a{
@@ -68,21 +56,23 @@ a.active{
 }
 
 .up{
-  left: 50px;
+  bottom: 120px;
+  left: 150px;
   position: absolute;
 }
 .left{
-  top: 30px;
-  position: absolute;
-}
-.right{
-  top: 30px;
+  bottom: 80px;
   left: 100px;
   position: absolute;
 }
+.right{
+  bottom: 80px;
+  left: 200px;
+  position: absolute;
+}
 .down{
-  top: 60px;
-  left: 50px;
+  bottom: 40px;
+  left: 150px;
   position: absolute;
 }
 
@@ -92,13 +82,17 @@ a.active{
   width: 50px;
   margin: 0 auto;
   pointer-events: none;
-  position: relative;
-  top: -110px;
-  right: -250px;
+  position: absolute;
+  bottom: 50px;
+  right: 100px;
   font: bold 20px/20px arial, sans-serif;
   color: red;
 }
 
 #batteryIcon {
   opacity: .3;
+}
+
+#copyright {
+  align-left: center;
 }
