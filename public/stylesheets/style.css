@@ -5,7 +5,7 @@ html, body {
 #camera {
   width: 90%;
   height: 90%;
-  padding: 10px;
+  padding: 20px;
   margin: 0px auto;
   display: flex;
   position: relative;
@@ -14,7 +14,6 @@ html, body {
   display: block;
   width: 100%;
   height: 100%;
-  align-self: center;
   border: 10px solid #333;
   border-radius: 5px;
   pointer-events: none;
@@ -32,13 +31,13 @@ a{
     0 4px 0 black, 
     0 2px 0 #444, 
     0 2px 3px #333;
-  text-shadow: 0 -1px 0 black;
+  text-shadow: 0 -2px 0 black;
   font: bold 40px/40px arial, sans-serif;
   text-transform: uppercase;
   cursor: pointer;
   border-top: 1px solid #222;
   position: absolute;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 a.active{
   color:#888;
@@ -56,7 +55,7 @@ a.active{
 
 .panRight {
   top: 40%;
-  right: 20px;
+  right: 40px;
 }
 
 .up{
@@ -89,10 +88,11 @@ a.active{
 }
 
 #batteryIcon {
-  opacity: .3;
+  opacity: .4;
 }
 
 #copyright {
-  align-left: center;
+  font-size: small;
+  text-align: center;
   padding: 20px
 }
