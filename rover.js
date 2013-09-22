@@ -28,19 +28,19 @@ app.configure('production', function () { app.use(express.errorHandler()); });
 var proxy = require('./proxy.js');
 proxy.use(http);
 
-var routes = require('./routes');
-app.get('/', routes.index);
-app.get('/rover', routes.rover);
-app.get('/dt', routes.dt);
-app.get('/still', routes.still);
-app.get('/stillFile', routes.stillFile);
-app.get('/stream', proxy.stream);
-app.get('*', function (req, res) { res.send('<H1>404 Not Found</H1>', 404); });
-
 // socket IO event handler
 var hb = require('./hb.js');
 var sio = require('./sio.js');
 sio.use(server, hb);
+
+var routes = require('./routes');
+app.get('/', routes.index);
+app.get('/dt', routes.dt);
+app.get('/still', routes.still);
+app.get('/stillFile', routes.stillFile);
+app.get('/stream', proxy.stream);
+app.get('/rover', function (req, res) { routes.rover(req, res, hb); });
+app.get('*', function (req, res) { res.send('<H1>404 Not Found</H1>', 404); });
 
 // start web server
 server.listen(8088);
