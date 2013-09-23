@@ -59,6 +59,7 @@ $(function () {
   }
   $(document).keyup(function(e){ keyReleased(e.which); });
 
+
   $(document).ready(function() {
     function simulateClick(k) { keyPressed(k); setTimeout(function () { keyReleased(k); }, 200); }
     $('.up').click(function() { simulateClick(KeyEvent.DOM_VK_F); });
@@ -68,10 +69,38 @@ $(function () {
     $('.panLeft').click(function() { simulateClick(KeyEvent.DOM_VK_LEFT); });
     $('.panRight').click(function() { simulateClick(KeyEvent.DOM_VK_RIGHT); });
 
+    var debugOn = false, debugMsg, motion;
+    $('#debugMsg').click(function() { debugOn = !debugOn; });
     function onDeviceMotion(event) {
       var accel = event.accelerationIncludingGravity;
-      $('#logmsg').text("got motion x: " + accel.x);
+      debugMsg = debugOn ? "x: " + accel.x + ", y: " + accel.y + ", z: " + accel.z : undefined;
+      // landscape: x = -8, y = 0, z = -5
+      // portrait: x = 0, y = -8, z = -5
+      motion = undefined;
+      if (accel.z < -6) { motion = KeyEvent.DOM_VK_F; }
+      else if (accel.z > 2) { motion = KeyEvent.DOM_VK_B; }
+      else if (accel.x < -7) { // landscape orientation
+        if (accel.y > 3) { motion = KeyEvent.DOM_VK_L; }
+        else if (accel.y < -3) { motion = KeyEvent.DOM_VK_R; }
+      } else if (accel.x > 7) {
+        if (accel.y > 3) { motion = KeyEvent.DOM_VK_R; }
+        else if (accel.y < -3) { motion = KeyEvent.DOM_VK_L; }
+      }
+      else if (accel.y < -7) { // portrait orientation
+        if (accel.x > 3) { motion = KeyEvent.DOM_VK_R; }
+        else if (accel.x < -3) { motion = KeyEvent.DOM_VK_L; }
+      } else if (accel.y > 7) {
+        if (accel.x > 3) { motion = KeyEvent.DOM_VK_L; }
+        else if (accel.x < -3) { motion = KeyEvent.DOM_VK_R; }
+      }
     }
     window.addEventListener("devicemotion", onDeviceMotion, false);
+
+    function motionCheck() { 
+      if (debugMsg !== undefined) { $('#debugMsg').text(motion + ' = ' + debugMsg); } 
+      simulateClick(motion);
+      setTimeout(motionCheck, 500);
+    }
+    motionCheck(); 
   });
 });

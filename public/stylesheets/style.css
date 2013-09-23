@@ -2,7 +2,7 @@ html, body {
   height: 100%;
 }
 
-#camera {
+#control {
   width: 90%;
   height: 90%;
   padding: 20px;
@@ -10,6 +10,7 @@ html, body {
   display: flex;
   position: relative;
 }
+
 #stream {
   display: block;
   width: 100%;
@@ -46,6 +47,14 @@ a.active{
     inset 0 0 40px #333,
     0 0 3px #333;
   margin-top: 4px;
+}
+
+#debugMsg {
+  top: 5%;
+  left: 40px;
+  padding: 20px;
+  opacity: 0.5;
+  position: absolute;
 }
 
 .panLeft{
@@ -92,7 +101,6 @@ a.active{
 }
 
 #copyright {
-  font-size: small;
+  font-size: smaller;
   text-align: center;
-  padding: 20px
 }
