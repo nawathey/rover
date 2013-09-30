@@ -1,5 +1,5 @@
 /*
-  Author: Sam Lu - 9/2/2013
+  Author: Sam Lu - 9/29/2013
 
   Based on Test program for Handy Board - hbtest.ic by Fred G. Martin (fredm@media.mit.edu)    
 */
@@ -10,7 +10,7 @@
 #use "servo_a7.icb"
 #use "servo_a5.icb"
 
-int ver = 5;
+int ver = 6;
 
 void 
 menu()
@@ -19,6 +19,8 @@ menu()
           "Menu: Analogs", "Menu: Knob", "Menu: IR", "Menu: Sonar"};
     ao();
     tone(700.,.5);
+    tone(750.,.25);
+    tone(800.,.25);
     printf("\nSquawky Rover %d Press START\n", ver);
     while(!start_button());
     while(1) {
@@ -145,7 +147,7 @@ char buf[BUFLEN];
 
 int isDigit(int x) { return x >= '0' && x <= '9'; }
 
-void doSerialReady() { printf("%d>\n", analog(BATTERY_PORT)); serial_putchar(100, '>'); tone(1100.,.05); tone(1150.,.1); }
+void doSerialReady() { printf("%d>", analog(BATTERY_PORT)); serial_putchar(100, '>'); tone(1150.,.1); }
 void doSerialPutNum(int cnt) {
     char s[BUFLEN]; 
     its(cnt, s); 
@@ -177,6 +179,9 @@ serialConsole(int invokedFromMenu)
     printf("Serail console  HoldSTOP to end\n");
     servoInit(1);
     setServoPan(SERVO_MID); // center it
+    tone(800.,1.);
+    tone(750.,.5);
+    tone(700.,.5);
     setServoTilt(SERVO_MID); // center it
     sleep(1.);
     disable_pcode_serial();
