@@ -17,7 +17,6 @@ html, body {
   height: 100%;
   border: 10px solid #333;
   border-radius: 5px;
-  pointer-events: none;
 }
 
 a{
@@ -88,7 +87,6 @@ a.active{
   text-align: center;
   width: 50px;
   margin: 0 auto;
-  pointer-events: none;
   position: absolute;
   bottom: 50px;
   right: 100px;

@@ -11,8 +11,9 @@ html
     #control
       block stream
       p#debugMsg 
-      block pan
-      block joystick
+      #buttons
+        block pan
+        block joystick
       #status
         block status
         #volts n/a
@@ -20,4 +21,4 @@ html
       block copyright
     script(type='text/javascript', src='http://code.jquery.com/jquery-1.10.2.min.js')
     script(type='text/javascript', src='/socket.io/socket.io.js')
-    script(type='text/javascript', src='/javascripts/script.js')
+    script(type='text/javascript', src='/javascripts/roverControl.js')

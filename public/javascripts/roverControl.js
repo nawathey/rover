@@ -61,6 +61,13 @@ $(function () {
 
 
   $(document).ready(function() {
+    function setControl(f) {
+      $('#buttons').opacity = f ? 0.7 : 0.0;
+    }
+
+    var controlOn = true;
+    $('#stream').click(function() { controlOn = !controlOn; setControl(controlOn); });
+
     function simulateClick(k) { keyPressed(k); setTimeout(function () { keyReleased(k); }, 200); }
     $('.up').click(function() { simulateClick(KeyEvent.DOM_VK_F); });
     $('.down').click(function() { simulateClick(KeyEvent.DOM_VK_B); });
