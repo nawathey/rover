@@ -1,23 +1,27 @@
 /*
-  Based on Test program for Handy Board - hbtest.ic by
-  Fred G. Martin (fredm@media.mit.edu)
+  Author: Sam Lu - 9/29/2013
 
-    
+  Based on Test program for Handy Board - hbtest.ic by Fred G. Martin (fredm@media.mit.edu)    
 */
 
-#define TESTNUM 8
+#define TESTNUM 9
 
 #use "serialio7.ic"
+#use "servo_a7.icb"
+#use "servo_a5.icb"
 
-int ver = 2;
+int ver = 6;
 
 void 
 menu()
 {
-    char a[TESTNUM][16]={"Menu: Serial","Menu: Motors","Menu: Servo","Menu: Digitals",
+    char a[TESTNUM][16]={"Menu: Serial","Menu: Motors","Menu: Servo5","Menu: Servo7","Menu: Digitals",
           "Menu: Analogs", "Menu: Knob", "Menu: IR", "Menu: Sonar"};
+    ao();
     tone(700.,.5);
-    printf("Squawky Rover .%dPress START\n", ver);
+    tone(750.,.25);
+    tone(800.,.25);
+    printf("\nSquawky Rover %d Press START\n", ver);
     while(!start_button());
     while(1) {
         int sel;
@@ -44,21 +48,22 @@ void timer(int n)
 
 void main()
 {
-    start_process(menu(),255);
+    // start_process(menu(),255);
+    start_process(serialConsole(0),255);
 }
 
 int menuCommand(int sel)
 {
-    switch(sel) 
-      {
-        case 0: serialConsole(); break;
+    switch(sel) {
+        case 0: serialConsole(1); break;
         case 1: testmotors(); break;
-        case 2: testservo(); break;
-        case 3: testdigitals(); break;
-        case 4: testanalogs(); break;
-        case 5: testknob(); break;
-        case 6: testir(); break;
-        case 7: testsonar(); break;
+        case 2: testservo5(); break;
+        case 3: testservo7(); break;
+        case 4: testdigitals(); break;
+        case 5: testanalogs(); break;
+        case 6: testknob(); break;
+        case 7: testir(); break;
+        case 8: testsonar(); break;
         default: return 1;
     }
     return 0;
@@ -112,14 +117,16 @@ int serial_get(char buf[], int max)
     return i;
 }
 */
-// get a string until '\n' or max 
+// get a string until '\n' or max buffer
+// NOT USED because the buffer keeps being overrun even with hog_processor
+/*
 int serial_get(char buf[])
 {
     int i, j, c;
     int n = _array_size(buf);
     while (i < n) {
-        while (!(peek(0x102e) & 0x20));           /* wait until a character arrives */
-        c = peek(0x102f);              /* return it as an int */ 
+        while (!(peek(0x102e) & 0x20));           // wait until a character arrives 
+        c = peek(0x102f);              // return it as an int  
         if (c == '.') {
             hog_processor();
         } else {    
@@ -133,66 +140,130 @@ int serial_get(char buf[])
     serial_put(buf);
     return i;
 }
+*/
 
 #define BUFLEN 32
 char buf[BUFLEN];
 
 int isDigit(int x) { return x >= '0' && x <= '9'; }
 
+void doSerialReady() { printf("%d>", analog(BATTERY_PORT)); serial_putchar(100, '>'); tone(1150.,.1); }
+void doSerialPutNum(int cnt) {
+    char s[BUFLEN]; 
+    its(cnt, s); 
+    serial_put("\r\n["); serial_put(s); serial_put("]"); 
+}
+void doSerialInvalidCmd(int cmdChar) { tone(300., .5); printf("\nErr:%c Valid:fblrapt:", cmdChar);}
+
+int SERVO_MIN=1800;
+int SERVO_MAX=6400;
+int SERVO_MID = (SERVO_MIN + SERVO_MAX) / 2;
+
+int servoLimit(int i) {
+    if (i < SERVO_MIN) i = SERVO_MIN;
+    if (i > SERVO_MAX) i = SERVO_MAX;
+    return i;
+}
+
+void servoInit(int i) { servo_a5_init(i); servo_a7_init(i); }
+
+int getServoPan() { return servo_a7_pulse; }
+int setServoPan(int i) { servo_a7_pulse = servoLimit(i); return servo_a7_pulse; }
+int getServoTilt() { return servo_a5_pulse; }
+int setServoTilt(int i) { servo_a5_pulse = servoLimit(i); return servo_a5_pulse; }
+
 void
-serialConsole(void)
+serialConsole(int invokedFromMenu)
 {
-    int i, rc, sel, cnt, err;
-    char cmd[BUFLEN], s[BUFLEN];
+    int i, gotChar, cnt, err, cmdChar;
     printf("Serail console  HoldSTOP to end\n");
+    servoInit(1);
+    setServoPan(SERVO_MID); // center it
+    tone(800.,1.);
+    tone(750.,.5);
+    tone(700.,.5);
+    setServoTilt(SERVO_MID); // center it
+    sleep(1.);
     disable_pcode_serial();
+    gotChar = 1;
     while (!stop_button()) {
         err = 0;
-        sleep(.5);
-        printf(">");
-        rc = serial_put(">");
-        tone(1100., .1);tone(1100., .1);
-        rc = serial_get(cmd);
-        rc = its(cnt++, s);
-        serial_put("\r\n["); serial_put(s); serial_put("]");
-        if (isDigit(cmd[0]) && cmd[1] == 0) {
-            tone(800., .2);
-            err = menuCommand(cmd[0]-'0');
-            while (stop_button()); // wait for stop button to be released
-        }
-        else {
-            err = carCommand(cmd);
-        }
-        if (err) {
-            tone(300., .5);
-            printf("\nInvalid cmd:[%s]", cmd);
+        if (gotChar) doSerialReady();
+        gotChar = serial_getchar(50, &cmdChar);
+        if (gotChar) {
+            //start_process(doSerialResponse(cnt++));
+            if (isDigit(cmdChar)) {
+                tone(800., .2);
+                err = menuCommand(cmdChar-'0');
+                while (stop_button()); // wait for stop button to be released
+            }
+            else {
+                err = carCommand(cmdChar);
+            }
+            if (err) 
+              doSerialInvalidCmd(cmdChar);
+            else 
+              serial_putchar(100, cmdChar); // echo the command
+        } else {
+            ao();
         }
     }
     enable_pcode_serial();
+    servoInit(0);
+    
+    if (! invokedFromMenu)
+      menu();
 }
 
-int power = 50;
+int BATTERY_PORT = 2; // analog port that measures 1/2 of the motor battery voltage
 
-void leftFwd() { motor(0, power); motor(2, power); }
-void rightFwd() { motor(1, power); motor(3, power); }
-void leftBack() { motor(0, -power); motor(2, -power); }
-void rightBack() { motor(1, -power); motor(3, -power); }
+int power = 50; // default mid point between 0 to 100
+int TURN_POWER = 100; // for turning, we need max power
 
-int carCommand(char cmd[])
+void leftFwd(int p) { motor(3, p); motor(2, p); }
+void rightFwd(int p) { motor(1, p); motor(0, p); }
+void leftBack(int p) { motor(3, -p); motor(2, -p); }
+void rightBack(int p) { motor(1, -p); motor(0, -p); }
+
+int STEP = (SERVO_MIN + SERVO_MAX) / 10;
+int servoDelta(int x, int c) { 
+    if (c == 'm') return SERVO_MID; 
+    if (c == 'l') return x-STEP; 
+    if (c == 'r') return x+STEP; 
+    return 0; 
+}
+
+int carCommand(int cmdChar)
 {
-    int err = 0;
-    if (cmd[1] == 0) { // 1 char commands
-        if (cmd[0] == 'f') { leftFwd(); rightFwd(); }
-        else if (cmd[0] == 'b') { leftBack(); rightBack(); }
-        else if (cmd[0] == 'l') { leftFwd(); rightBack(); }
-        else if (cmd[0] == 'r') { leftBack(); rightFwd(); }
-        else if (cmd[0] == 'o') { ao(); }
-        else err = 1;
-    } else if (cmd[2] == 0) { // 2 char commands        
-        if (cmd[0] == 'p' && isDigit(cmd[1])) { power = (cmd[1]-'0'+1)*10; }
-        else err = 1;
-    } else
-        err = 1;
+    int pChar, err = 0;
+    if (cmdChar == 'x') { 
+        if (serial_getchar(1000, &pChar))
+          power = (pChar-'0'+1)*10;
+        else 
+          err = 1;
+    }
+    else if (cmdChar == 'f') { leftFwd(power); rightFwd(power); }
+    else if (cmdChar == 'b') { leftBack(power); rightBack(power); }
+    else if (cmdChar == 'r') { leftFwd(TURN_POWER); rightBack(TURN_POWER); }
+    else if (cmdChar == 'l') { leftBack(TURN_POWER); rightFwd(TURN_POWER); }
+    else if (cmdChar == 'o') { ao(); }
+    else if (cmdChar == 'a') { doSerialPutNum(analog(BATTERY_PORT)); }
+    else if (cmdChar == 'p') { 
+        if (serial_getchar(1000, &pChar)) {
+            setServoPan(servoDelta(getServoPan(), pChar));
+        }
+        else 
+          err = 1;
+    }
+    else if (cmdChar == 't') { 
+        if (serial_getchar(1000, &pChar)) {
+            setServoTilt(servoDelta(getServoTilt(), pChar));
+        }
+        else 
+          err = 1;
+    }
+    else 
+      err = 1;
     return err;
 }
 
@@ -216,9 +287,32 @@ testmotors(void)
         }
     }
 }
+int knobToPulse() { return (255-knob()) * 40; }
 
 void 
-testservo(void)
+testservo5(void)
+{
+    servo_a5_init(1);
+    while(!stop_button()) {
+        printf("Activated Servo5Pulse=%d\n", setServoTilt(knobToPulse()));
+        msleep(200L);
+    }
+    servo_a5_init(0);
+}
+
+void 
+testservo7(void)
+{
+    servo_a7_init(1);
+    while(!stop_button()) {
+        printf("Activated Servo7Pulse=%d\n", setServoPan(knobToPulse()));
+        msleep(200L);
+    }
+    servo_a7_init(0);
+}
+
+void 
+testservoHB(void)
 {
     int i;
     printf("Attach Servos   Press START\n");
@@ -232,7 +326,6 @@ testservo(void)
       }
     init_expbd_servos(0);
 }
-
 
 void
 testdigitals(void)
