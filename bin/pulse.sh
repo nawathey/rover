@@ -1,15 +1,16 @@
 #!/bin/bash
 
-# test of ServoBlaster PWM
+# use servoBlaster to pulse the LED
 
-
-if	! ps | grep -v grep | grep servod 
-then	sudo ~/app/PiBits/ServoBlaster/user/servod --p1pins=11 --min=0 --max=2000
-	trap 'sudo killall servod' EXIT
+if      ! \ps -ef | grep -v grep | grep servod >/dev/null 2>&1
+then    sudo ~/app/PiBits/ServoBlaster/user/servod --min=0 --max=2000 --p1pins=11
+        trap "sudo killall servod" EXIT
 fi
 
-while true
-do	for i in $(seq 0 200 2000) $(seq 2000 -200 0)
-	do echo 0=$i >/dev/servoblaster; sleep .1
-	done; 
+while   :
+do      for i in 0 $(seq 0 1000 2000) $(seq 2000 -400 0) 0
+        do      echo 0=$i >/dev/servoblaster
+                sleep .1
+        done
+        sleep .5
 done
