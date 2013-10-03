@@ -8,15 +8,17 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
     
   body
-    #control
+    #canvas
       img(src='/stream', alt='please wait for live streaming to start...')#stream
+      img(src='/images/onoffWhite.png', alt='on/off')#onoffSwitch
       p#debugMsg 
-      #buttons
-        block pan
-        block joystick
-      #status
-        img(src='/images/batterySmall.png', alt='battery')#batteryIcon
-        #volts n/a
+      #controlPanel
+        #buttons
+          block pan
+          block joystick
+        #status
+          img(src='/images/batterySmall.png', alt='battery')#batteryIcon
+          #volts n/a
     #copyright
       block copyright
     script(type='text/javascript', src='http://code.jquery.com/jquery-1.10.2.min.js')

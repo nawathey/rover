@@ -61,13 +61,6 @@ $(function () {
 
 
   $(document).ready(function() {
-    function setControl(f) {
-      $('#buttons').opacity = f ? 0.7 : 0.0;
-    }
-
-    var controlOn = true;
-    $('#stream').click(function() { controlOn = !controlOn; setControl(controlOn); });
-
     function simulateClick(k) { keyPressed(k); setTimeout(function () { keyReleased(k); }, 200); }
     $('.up').click(function() { simulateClick(KeyEvent.DOM_VK_F); });
     $('.down').click(function() { simulateClick(KeyEvent.DOM_VK_B); });
@@ -75,6 +68,8 @@ $(function () {
     $('.right').click(function() { simulateClick(KeyEvent.DOM_VK_R); });
     $('.panLeft').click(function() { simulateClick(KeyEvent.DOM_VK_LEFT); });
     $('.panRight').click(function() { simulateClick(KeyEvent.DOM_VK_RIGHT); });
+
+    $('#onoffSwitch').click(function() { $('#controlPanel').fadeToggle(); });
 
     var debugOn = false, debugMsg, motion;
     $('#debugMsg').click(function() { debugOn = !debugOn; });
