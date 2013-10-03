@@ -9,13 +9,13 @@ html
     
   body
     #control
-      block stream
+      img(src='/stream', alt='please wait for live streaming to start...')#stream
       p#debugMsg 
       #buttons
         block pan
         block joystick
       #status
-        block status
+        img(src='/images/batterySmall.png', alt='battery')#batteryIcon
         #volts n/a
     #copyright
       block copyright

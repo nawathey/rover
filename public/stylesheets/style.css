@@ -2,6 +2,10 @@ html, body {
   height: 100%;
 }
 
+body {
+  background-image:url('/images/circuits.jpg');
+}
+
 #control {
   width: 90%;
   height: 90%;
