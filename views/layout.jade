@@ -7,12 +7,12 @@ html
     link(rel='stylesheet', href='/stylesheets/normalize.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
     
-  body
+  body(background='/images/circuits.jpg')
     #canvas
       img(src='/stream', alt='please wait for live streaming to start...')#stream
       img(src='/images/onoffWhite.png', alt='on/off')#onoffSwitch
       p#debugMsg 
-      #controlPanel
+      #controlPanel(style='display:none')
         #buttons
           block pan
           block joystick

@@ -59,7 +59,6 @@ $(function () {
   }
   $(document).keyup(function(e){ keyReleased(e.which); });
 
-
   $(document).ready(function() {
     function simulateClick(k) { keyPressed(k); setTimeout(function () { keyReleased(k); }, 200); }
     $('.up').click(function() { simulateClick(KeyEvent.DOM_VK_F); });
@@ -69,7 +68,10 @@ $(function () {
     $('.panLeft').click(function() { simulateClick(KeyEvent.DOM_VK_LEFT); });
     $('.panRight').click(function() { simulateClick(KeyEvent.DOM_VK_RIGHT); });
 
-    $('#onoffSwitch').click(function() { $('#controlPanel').fadeToggle(); });
+    $('#onoffSwitch').click(function() {
+      $('#onoffSwitch').attr('src', $('#controlPanel').css('display') !== 'none' ? '/images/onoffWhite.png' : '/images/onoffGreen.png');
+      $('#controlPanel').fadeToggle();
+    });
 
     var debugOn = false, debugMsg, motion;
     $('#debugMsg').click(function() { debugOn = !debugOn; });
@@ -98,11 +100,11 @@ $(function () {
     }
     window.addEventListener("devicemotion", onDeviceMotion, false);
 
-    function motionCheck() { 
-      if (debugMsg !== undefined) { $('#debugMsg').text(motion + ' = ' + debugMsg); } 
+    function motionCheck() {
+      if (debugMsg !== undefined) { $('#debugMsg').text(motion + ' = ' + debugMsg); }
       simulateClick(motion);
       setTimeout(motionCheck, 500);
     }
-    motionCheck(); 
+    motionCheck();
   });
 });
