@@ -13,8 +13,7 @@ $(function () {
 
   socket.on('status', function(data) {
     //console.log('received status ' + JSON.stringify(data));
-    var volts = data.battery;
-    $('#volts').text(volts);
+    $('#volts').text(data.battery);
   });
 
   function kDown(k, lbl) {
@@ -68,43 +67,52 @@ $(function () {
     $('.panLeft').click(function() { simulateClick(KeyEvent.DOM_VK_LEFT); });
     $('.panRight').click(function() { simulateClick(KeyEvent.DOM_VK_RIGHT); });
 
+    function isControlOn() { return $('#controlPanel').css('display') !== 'none'; }
+    function isDebugOn() { return $('#debugMsg').css('display') !== 'none'; }
+    $('#batteryIcon').click(function() { $('#debugMsg').fadeToggle(); });
+
+    var lastMotionTime;
+    function onDeviceMotion(event) {
+      var accel = event.accelerationIncludingGravity,
+        m, t;
+      if (isDebugOn()) { $('#debugMsg').text("x: " + accel.x + ", y: " + accel.y + ", z: " + accel.z); };
+      // landscape: x = -8, y = 0, z = -5
+      // portrait: x = 0, y = -8, z = -5
+      if (accel.z < -6) { m = KeyEvent.DOM_VK_F; }
+      else if (accel.z > 2) { m = KeyEvent.DOM_VK_B; }
+      else if (accel.x < -7) { // landscape orientation
+        if (accel.y > 3) { m = KeyEvent.DOM_VK_L; }
+        else if (accel.y < -3) { m = KeyEvent.DOM_VK_R; }
+      } else if (accel.x > 7) {
+        if (accel.y > 3) { m = KeyEvent.DOM_VK_R; }
+        else if (accel.y < -3) { m = KeyEvent.DOM_VK_L; }
+      }
+      else if (accel.y < -7) { // portrait orientation
+        if (accel.x > 3) { m = KeyEvent.DOM_VK_R; }
+        else if (accel.x < -3) { m = KeyEvent.DOM_VK_L; }
+      } else if (accel.y > 7) {
+        if (accel.x > 3) { m = KeyEvent.DOM_VK_L; }
+        else if (accel.x < -3) { m = KeyEvent.DOM_VK_R; }
+      }
+      if (m !== undefined) {
+        t = new Date().getTime();
+        if (lastMotionTime === undefined || (t - lastMotionTime) > 500) { // only fire every 1/2 second
+          lastMotionTime = t;
+          simulateClick(m);
+        }
+      }
+    }
+
     $('#onoffSwitch').click(function() {
-      $('#onoffSwitch').attr('src', $('#controlPanel').css('display') !== 'none' ? '/images/onoffWhite.png' : '/images/onoffGreen.png');
+      // the next 2 lines may seem wrong but it's because the state of isControlOn will be toggled immediately afterwards
+      $('#onoffSwitch').attr('src', isControlOn() ? '/images/onoffWhite.png' : '/images/onoffGreen.png');
+      if (isControlOn()) {
+        window.removeEventListener("devicemotion", onDeviceMotion, false);
+      } else {
+        window.addEventListener("devicemotion", onDeviceMotion, false);
+      }
       $('#controlPanel').fadeToggle();
     });
 
-    var debugOn = false, debugMsg, motion;
-    $('#debugMsg').click(function() { debugOn = !debugOn; });
-    function onDeviceMotion(event) {
-      var accel = event.accelerationIncludingGravity;
-      debugMsg = debugOn ? "x: " + accel.x + ", y: " + accel.y + ", z: " + accel.z : undefined;
-      // landscape: x = -8, y = 0, z = -5
-      // portrait: x = 0, y = -8, z = -5
-      motion = undefined;
-      if (accel.z < -6) { motion = KeyEvent.DOM_VK_F; }
-      else if (accel.z > 2) { motion = KeyEvent.DOM_VK_B; }
-      else if (accel.x < -7) { // landscape orientation
-        if (accel.y > 3) { motion = KeyEvent.DOM_VK_L; }
-        else if (accel.y < -3) { motion = KeyEvent.DOM_VK_R; }
-      } else if (accel.x > 7) {
-        if (accel.y > 3) { motion = KeyEvent.DOM_VK_R; }
-        else if (accel.y < -3) { motion = KeyEvent.DOM_VK_L; }
-      }
-      else if (accel.y < -7) { // portrait orientation
-        if (accel.x > 3) { motion = KeyEvent.DOM_VK_R; }
-        else if (accel.x < -3) { motion = KeyEvent.DOM_VK_L; }
-      } else if (accel.y > 7) {
-        if (accel.x > 3) { motion = KeyEvent.DOM_VK_L; }
-        else if (accel.x < -3) { motion = KeyEvent.DOM_VK_R; }
-      }
-    }
-    window.addEventListener("devicemotion", onDeviceMotion, false);
-
-    function motionCheck() {
-      if (debugMsg !== undefined) { $('#debugMsg').text(motion + ' = ' + debugMsg); }
-      simulateClick(motion);
-      setTimeout(motionCheck, 500);
-    }
-    motionCheck();
   });
 });

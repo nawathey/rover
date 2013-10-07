@@ -37,7 +37,7 @@ a{
   cursor: pointer;
   border-top: 1px solid #222;
   position: absolute;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 a.active{
   color:#888;
@@ -49,10 +49,11 @@ a.active{
 }
 
 #debugMsg {
-  top: 5%;
+  top: 40px;
   left: 140px;
   padding: 20px;
   opacity: 0.5;
+  display: none;
   position: absolute;
 }
 
@@ -62,15 +63,16 @@ a.active{
   width: 40px;
   height: 40px;
   position: absolute;
+  cursor: pointer;
 }
 
 .panLeft{
-  top: 40%;
+  top: 45%;
   left: 40px;
 }
 
 .panRight {
-  top: 40%;
+  top: 45%;
   right: 40px;
 }
 
@@ -98,12 +100,16 @@ a.active{
   position: absolute;
   bottom: 50px;
   right: 100px;
-  font: bold 20px/20px arial, sans-serif;
-  color: red;
 }
 
 #batteryIcon {
-  opacity: .4;
+  opacity: .3;
+}
+
+#volts {
+  opacity: .6;
+  font: bold 20px/20px arial, sans-serif;
+  color: red;
 }
 
 #copyright {

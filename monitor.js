@@ -15,9 +15,9 @@ try {
   //      console.log('monitor: ' + n);
       if (n > 0) {
         g17.set();
-        setTimeout(function () { g17.reset(); }, 20);
+        setTimeout(function () { g17.reset(); }, 10);
       }
-    }, 10000);
+    }, 1000);
   };
 } catch (e) {
   exports.use = function (io) {
