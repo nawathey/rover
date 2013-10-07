@@ -1,0 +1,5 @@
+#!/bin/bash
+
+i2cset -y 1 0x20 0x00 0x80 # setup 1 input and 7 output
+i2cset -y 1 0x20 0x14 0x03 # turn on both LED
+i2cdump -y 1 0x20 
