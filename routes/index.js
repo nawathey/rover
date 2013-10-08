@@ -19,14 +19,6 @@ exports.stillFile = function (req, res) {
   });
 };
 
-exports.still = function (req, res) {
-  exec('raspistill -n -t 500 -o -', { maxBuffer : 10000 * 1024 }, function (error, stdout, stderr) {
-    res.shouldKeepAilve = false;
-    res.writeHead(200, {'Content-Type': 'image/jpeg'});
-    res.end(stdout);
-  });
-};
-
 var url = require('url');
 exports.rover = function (req, res, hb) {
   var url_parts = url.parse(req.url, true);

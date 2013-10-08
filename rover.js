@@ -35,9 +35,9 @@ sio.use(server, hb);
 
 var routes = require('./routes');
 app.get('/', routes.index);
-app.get('/dt', routes.dt);
-app.get('/still', routes.still);
+app.get('/status', routes.dt);
 app.get('/stillFile', routes.stillFile);
+app.get('/still', proxy.still);
 app.get('/stream', proxy.stream);
 app.get('/rover', function (req, res) { routes.rover(req, res, hb); });
 app.get('*', function (req, res) { res.send('<H1>404 Not Found</H1>', 404); });
