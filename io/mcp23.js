@@ -1,3 +1,5 @@
+#!/opt/node/bin/node
+
 // test of i2c package: https://npmjs.org/package/i2c
 var i2c = require('i2c'),
   address = 0x20, // first MCP23017 chip
@@ -34,7 +36,7 @@ function blink() {
       console.log('error on write ' + err); 
     else {
       if (val > 3) val = 0; 
-      setTimeout(blink, 250); 
+      setTimeout(blink, 500); 
     }
   });
 }
