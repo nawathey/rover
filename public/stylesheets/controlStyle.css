@@ -2,6 +2,10 @@ html, body {
   height: 100%;
 }
 
+#controlPanel {
+  display: none;
+}
+
 #canvas {
   width: 90%;
   height: 90%;

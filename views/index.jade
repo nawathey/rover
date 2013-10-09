@@ -7,12 +7,18 @@ html
     
   body
     .container
-      .masthead
-        h3.text-muted Raspberry Pi Rover
-      .jumbotron
-        h1 Welcome
-      p(class="btn btn-lg btn-success") Login
-      p
-      img(src='/still', alt='Live Still Image')#still
-    script(type='text/javascript', src='http://code.jquery.com/jquery-1.10.2.min.js')
+      .navbar.navbar-default
+        .navbar-header
+          .container
+            a(href='#').navbar-brand Raspberry Pi Rover
+            ul.nav.navbar-nav
+              li.active
+                a(href='/control') Control
+              li
+                a(href='/status') Date
+      .jumbotron(style='text-align:center; background-image: url(/images/circuits.jpg)')
+        a.btn.btn-lg.btn-success Logon
+        p
+        img(src='/still', alt='Live Still Image')#still
+    script(type='text/javascript', src='//code.jquery.com/jquery-1.10.2.min.js')
     script(type='text/javascript', src='//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js')
