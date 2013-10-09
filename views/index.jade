@@ -1,14 +1,18 @@
-extends layout
-
-block joystick
-  a.up f
-  a.left l
-  a.right r
-  a.down b
-
-block pan
-  a.panLeft <
-  a.panRight >
-
-block copyright
-  p Copyright @ 2013 by Samuel Lu
+doctype 5
+html
+  head
+    meta(charset="utf-8")
+    title= title
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css')
+    
+  body
+    .container
+      .masthead
+        h3.text-muted Raspberry Pi Rover
+      .jumbotron
+        h1 Welcome
+      p(class="btn btn-lg btn-success") Login
+      p
+      img(src='/still', alt='Live Still Image')#still
+    script(type='text/javascript', src='http://code.jquery.com/jquery-1.10.2.min.js')
+    script(type='text/javascript', src='//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js')
