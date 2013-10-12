@@ -3,10 +3,15 @@
 /*jslint node: true, indent: 2, nomen: true */
 "use strict";
 
-var SerialPort = require('serialport').SerialPort,
-  sp = new SerialPort('/dev/ttyUSB0', { baudrate: 9600 }),
-  buf = '',
-  statusCB;
+try {
+  var SerialPort = require('serialport').SerialPort,
+    sp = new SerialPort('/dev/ttyUSB0', { baudrate: 9600 }),
+    buf = '',
+    statusCB;
+} catch (e) {
+  console.log("serial port module not found, HandyBoard interface disabled.");
+  return;
+}
 
 function getBatteryLevel() {
   var x = buf.lastIndexOf('['),

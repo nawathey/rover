@@ -9,12 +9,16 @@ var express = require('express'),
   server = http.createServer(app);
 
 app.configure(function () {
+  app.set('port', 8088);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  //app.use(express.bodyParser());
-  //app.use(express.methodOverride());
   app.use(express.logger('dev'));
+  app.use(express.bodyParser());
+  app.use(express.cookieParser());
+  app.use(express.methodOverride());
+  app.use(express.session({ secret: 'super-duper-secret-secret' })); 
   app.use(express.static(__dirname + '/public'));
+  app.use('/secure', ensureAuthenticated);
   app.use(app.router);
   app.use(function (err, req, res, next) {
     console.error(err.stack);
@@ -22,27 +26,36 @@ app.configure(function () {
   });
 });
 
-app.configure('development', function () { app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); });
-app.configure('production', function () { app.use(express.errorHandler()); });
+function ensureAuthenticated(req, res, next) { 
+  console.log("user=" + req.session.user); 
+  if (req.session.user === undefined)
+    res.redirect('/');
+  else
+    next(); 
+};
 
-var proxy = require('./proxy.js');
-proxy.use(http);
+app.configure('development', function () { 
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+});
+app.configure('production', function () { 
+  app.use(express.errorHandler()); 
+});
+
+require('./node-login/app/server/router')(app);
 
 // socket IO event handler
 var hb = require('./hb.js');
 var sio = require('./sio.js');
 sio.use(server, hb);
+var proxy = require('./proxy.js');
+proxy.use(http);
 
-var routes = require('./routes');
-app.get('/', routes.index);
-app.get('/control', routes.control);
-app.get('/status', routes.dt);
-app.get('/stillFile', routes.stillFile);
-app.get('/rover', function (req, res) { routes.rover(req, res, hb); });
-app.get('/still', proxy.still);
-app.get('/stream', proxy.stream);
+require('./router.js')(app, hb, proxy);
+
+// custom Page not found error
 app.get('*', function (req, res) { res.send('<H1>404 Not Found</H1>', 404); });
 
 // start web server
-server.listen(8088);
-console.log('Web server listening on port %d in %s mode', server.address().port, app.settings.env);
+server.listen(app.get('port'), function () {
+  console.log('Web server listening on port %d in %s mode', server.address().port, app.settings.env);
+});
