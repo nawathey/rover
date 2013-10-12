@@ -1,0 +1,25 @@
+doctype 5
+html
+  head
+    meta(charset="utf-8")
+    title= title
+    link(rel='stylesheet', href='/vendor/3.0.0.bootstrap.min.css')
+    
+  body
+    .container
+      .navbar.navbar-default
+        .navbar-header
+          .container
+            .navbar-brand Raspberry Pi Rover
+            ul.nav.navbar-nav
+              li.active
+                a(href='/secure/control') Control
+              li
+                a(href='/status') Date
+              li
+                a(href='/logout') Logout
+      .jumbotron(style='text-align:center; background-image: url(/images/circuits.jpg)')
+        img(src='/secure/still', alt='Live Still Image')#still
+    script(src='/vendor/jquery-1.10.2.min.js')
+    script(src='/vendor/3.0.0.bootstrap.min.js')
+
