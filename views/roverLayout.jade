@@ -3,6 +3,7 @@ html
   head
     meta(charset="utf-8")
     title= title
+
     meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
     link(rel='stylesheet', href='/vendor/3.0.0.bootstrap.min.css')
     link(rel='stylesheet', href='/stylesheets/rover.css')
@@ -18,14 +19,23 @@ html
         li
           a(href='/secure/drive') Live
         li
-          a(href='/home') Account
-        li
           a(href='/status') Status
       ul.nav.navbar-nav.pull-right
         li
+          a(href='/home') Account
+        li
           a(href='/logout') Logout
+
     .bodyContainer
       block bodyContent
+
     script(src='/vendor/jquery-1.10.2.min.js').
     script(src='/vendor/3.0.0.bootstrap.min.js').
+    script.
+      // highlight bootstrap menu item
+      $(document).ready(function() {
+        $('ul.nav a').filter(function() { 
+            return this.href == window.location; 
+        }).parent().addClass('active');
+      })
     block moreScripts
