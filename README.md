@@ -5,10 +5,14 @@ Runs on the Raspberry Pi with a Camera Module mounted on top of a mobile platfor
 
 # Installation
 
-    git clone git@github.com:s8mlu/node-login.git
-    cd node-login; npm install
     git clone git@github.com:s8mlu/rover.git
     cd rover; npm install
+    git clone git@github.com:s8mlu/node-login.git
+    cd node-login; npm install
+   
+Modify the email id/passwords in 
+    node-login/app/server/modules/email-settings-mine.js
+
 
 # Usage
 

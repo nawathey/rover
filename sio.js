@@ -14,7 +14,7 @@ exports.use = function (server, hb) {
 
   io.sockets.on('connection', function (socket) {
     try { hb.onStatus(function (o) { socket.emit('status', o); }); }
-    catch (e) { console.log('Handyboard not functioning.'); }
+    catch (e) { console.log('Handyboard not functioning.'); return; }
 
     socket.on('keydown', function (dir) {
       if (!statusInProgress) {

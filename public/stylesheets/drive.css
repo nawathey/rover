@@ -1,16 +1,10 @@
-html, body {
-  height: 100%;
-}
-
 #controlPanel {
   display: none;
 }
 
 #canvas {
-  width: 90%;
-  height: 90%;
-  padding: 20px;
-  margin: 0px auto;
+  height: 100%;
+  width: 100%;
   display: flex;
   position: relative;
 }
@@ -23,7 +17,7 @@ html, body {
   border-radius: 5px;
 }
 
-a{
+.ctlbtn{
   width: 40px;
   line-height: 100%; /* vertical center */
   text-align: center; /* horizon center */
@@ -43,7 +37,7 @@ a{
   position: absolute;
   opacity: 0.5;
 }
-a.active{
+.ctlbtn.active{
   color:#888;
   background:#222;
   box-shadow:

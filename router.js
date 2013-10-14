@@ -1,25 +1,28 @@
 /*jslint node: true, indent: 2*/
 "use strict";
 
-module.exports = function (app, hb, proxy) {
+module.exports = function (app) {
   app.get('/logout', function (req, res) { 
     res.clearCookie('user');
     res.clearCookie('pass');
     req.session.destroy(function (e) { res.redirect('/'); });
   });
 
+  app.get('/secure/rover', function (req, res) { 
+    res.render('rover', { title: 'Raspberry Pi Rover', user: req.session.user.name }); 
+  });
+
   app.get('/status', function (req, res) {
     require('child_process').exec("date", function (error, stdout, stderr) { 
-      res.send("Now it's " + stdout); 
+      res.render('status', { 
+        title: 'Rover - Status', 
+        user: (req.session.user === undefined) ? '' : req.session.user.name, 
+        status : "Now it's " + stdout }); 
     });
   });
 
-  app.get('/secure/rover', function (req, res) { 
-    res.render('rover', { title: 'Raspberry Pi Rover' }); 
-  });
-
-  app.get('/secure/control', function (req, res) { 
-    res.render('control', { title: 'Raspberry Pi Rover Control Panel' }); 
+  app.get('/secure/drive', function (req, res) { 
+    res.render('drive', { title: 'Rover - Drive', user: req.session.user.name }); 
   });
 
   app.get('/secure/stillFile', function (req, res) {
@@ -28,12 +31,4 @@ module.exports = function (app, hb, proxy) {
       res.end();
     });
   });
-
-  app.get('/secure/hb', function (req, res, hb) { 
-    res.send(hb.rover(require('url').parse(req.url, true).query.cmd)); 
-  });
-
-  app.get('/secure/still', proxy.still);
-
-  app.get('/secure/stream', proxy.stream);
 };

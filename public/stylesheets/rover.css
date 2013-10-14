@@ -1,0 +1,17 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  background: #f2f9fe;
+}
+
+.bodyContainer {
+  height: 100%;
+  margin-top: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 10px;
+}
+
+.navbar { border-radius: 0px; }

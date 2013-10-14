@@ -43,14 +43,20 @@ app.configure('production', function () {
 
 require('../node-login/app/server/router')(app);
 
+require('./router.js')(app, hb, proxy);
+
+var proxy = require('./proxy.js');
+proxy.use(http);
+app.get('/secure/still', proxy.still);
+app.get('/secure/stream', proxy.stream);
+
 // socket IO event handler
 var hb = require('./hb.js');
 var sio = require('./sio.js');
 sio.use(server, hb);
-var proxy = require('./proxy.js');
-proxy.use(http);
-
-require('./router.js')(app, hb, proxy);
+app.get('/secure/hb', function (req, res, hb) { // for debugging only
+  res.send(hb.rover(require('url').parse(req.url, true).query.cmd)); 
+});
 
 // custom Page not found error
 app.get('*', function (req, res) { res.send('<H1>404 Not Found</H1>', 404); });
