@@ -1,6 +1,6 @@
 {
   "name": "rover",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "web server to control the roving web cam",
   "main": "rover.js",
   "scripts": {
@@ -13,13 +13,10 @@
       "socket.io": "*", 
       "serialport" : "*", 
       "gpio" : "*",
-      "mongodb" : "*",
-      "moment" : "*",
-      "emailjs" : "*"
   },
   "repository": {
     "type": "git",
-    "url": "/home/s8mlu/rover.git/"
+    "url": "git@github.com:s8mlu/rover.git"
   },
   "keywords": [
     "rover",
