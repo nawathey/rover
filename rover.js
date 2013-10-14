@@ -41,7 +41,7 @@ app.configure('production', function () {
   app.use(express.errorHandler()); 
 });
 
-require('./node-login/app/server/router')(app);
+require('../node-login/app/server/router')(app);
 
 // socket IO event handler
 var hb = require('./hb.js');
