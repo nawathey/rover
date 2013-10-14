@@ -5,7 +5,7 @@
 *.dat
 *.out
 *.pid
-*.gz
+*.db
 
 image*.jpg
 
@@ -18,7 +18,3 @@ results
 
 npm-debug.log
 node_modules
-node-login
-
-# containts private info
-email-settings-mine.js
