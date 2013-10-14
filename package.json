@@ -12,7 +12,7 @@
       "jade" : "*", 
       "socket.io": "*", 
       "serialport" : "*", 
-      "gpio" : "*",
+      "gpio" : "*"
   },
   "repository": {
     "type": "git",
