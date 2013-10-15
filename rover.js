@@ -9,6 +9,17 @@ var express = require('express'),
   server = http.createServer(app),
   adminUser = 'samlu';
 
+function ensureAuthenticated(req, res, next) {
+  console.log("user=" + req.session.user);
+  if (req.session.user === undefined) {
+    res.redirect('/');
+  } else if (req.session.user.user !== adminUser) {
+    res.redirect('/home');
+  } else {
+    next();
+  }
+}
+
 app.configure(function () {
   app.set('port', 8088);
   app.set('views', __dirname + '/views');
@@ -17,7 +28,7 @@ app.configure(function () {
   app.use(express.bodyParser());
   app.use(express.cookieParser());
   app.use(express.methodOverride());
-  app.use(express.session({ secret: 'super-duper-secret-secret' })); 
+  app.use(express.session({ secret: 'super-duper-secret-secret' }));
   app.use(express.static(__dirname + '/public'));
   app.use('/secure', ensureAuthenticated);
   app.use(app.router);
@@ -27,26 +38,16 @@ app.configure(function () {
   });
 });
 
-function ensureAuthenticated(req, res, next) { 
-  console.log("user=" + req.session.user); 
-  if (req.session.user === undefined)
-    res.redirect('/');
-  else if (req.session.user.user !== adminUser)
-    res.redirect('/home');
-  else 
-    next(); 
-};
-
-app.configure('development', function () { 
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+app.configure('development', function () {
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
-app.configure('production', function () { 
-  app.use(express.errorHandler()); 
+app.configure('production', function () {
+  app.use(express.errorHandler());
 });
 
 require('../node-login/app/server/router')(app);
 
-require('./router.js')(app, hb, proxy);
+require('./router.js')(app);
 
 var proxy = require('./proxy.js');
 proxy.use(http);
@@ -58,7 +59,7 @@ var hb = require('./hb.js');
 var sio = require('./sio.js');
 sio.use(server, hb);
 app.get('/secure/hb', function (req, res, hb) { // for debugging only
-  res.send(hb.rover(require('url').parse(req.url, true).query.cmd)); 
+  res.send(hb.rover(require('url').parse(req.url, true).query.cmd));
 });
 
 // custom Page not found error

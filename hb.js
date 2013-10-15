@@ -9,7 +9,7 @@ try {
     buf = '',
     statusCB;
 } catch (e) {
-  console.log("serial port module not found, HandyBoard interface disabled.");
+  console.log('serial port module not found, HandyBoard interface disabled.');
   return;
 }
 

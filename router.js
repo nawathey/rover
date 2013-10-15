@@ -2,27 +2,28 @@
 "use strict";
 
 module.exports = function (app) {
-  app.get('/logout', function (req, res) { 
+  app.get('/logout', function (req, res) {
     res.clearCookie('user');
     res.clearCookie('pass');
     req.session.destroy(function (e) { res.redirect('/'); });
   });
 
-  app.get('/secure/rover', function (req, res) { 
-    res.render('rover', { title: 'Raspberry Pi Rover', user: req.session.user.name }); 
+  app.get('/secure/rover', function (req, res) {
+    res.render('rover', { title: 'Raspberry Pi Rover', user: req.session.user.name });
   });
 
   app.get('/status', function (req, res) {
-    require('child_process').exec("date", function (error, stdout, stderr) { 
-      res.render('status', { 
-        title: 'Rover - Status', 
-        user: (req.session.user === undefined) ? '' : req.session.user.name, 
-        status : "Now it's " + stdout }); 
+    require('child_process').exec("date", function (error, stdout, stderr) {
+      res.render('status', {
+        title: 'Rover - Status',
+        user: (req.session.user === undefined) ? '' : req.session.user.name,
+        status : "The time is " + stdout
+      });
     });
   });
 
-  app.get('/secure/drive', function (req, res) { 
-    res.render('drive', { title: 'Rover - Drive', user: req.session.user.name }); 
+  app.get('/secure/drive', function (req, res) {
+    res.render('drive', { title: 'Rover - Drive', user: req.session.user.name });
   });
 
   app.get('/secure/stillFile', function (req, res) {

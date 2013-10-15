@@ -13,8 +13,12 @@ exports.use = function (server, hb) {
   require('./monitor.js').use(io);
 
   io.sockets.on('connection', function (socket) {
-    try { hb.onStatus(function (o) { socket.emit('status', o); }); }
-    catch (e) { console.log('Handyboard not functioning.'); return; }
+    try {
+      hb.onStatus(function (o) { socket.emit('status', o); });
+    } catch (e) {
+      console.log('Handyboard not functioning.');
+      return;
+    }
 
     socket.on('keydown', function (dir) {
       if (!statusInProgress) {

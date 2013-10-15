@@ -8,7 +8,9 @@ $(function () {
   },
     socket = io.connect(),
     isDown = [],
-    i;
+    i,
+    lastMotionTime;
+
   for (i = 0; i < 255; i += 1) { isDown[i] = false; }
 
   socket.on('status', function(data) {
@@ -58,8 +60,43 @@ $(function () {
   }
   $(document).keyup(function(e){ keyReleased(e.which); });
 
+  function simulateClick(k) { keyPressed(k); setTimeout(function () { keyReleased(k); }, 200); }
+  function isControlOn() { return $('#controlPanel').css('display') !== 'none'; }
+  function isDebugOn() { return $('#debugMsg').css('display') !== 'none'; }
+
+  function onDeviceMotion(event) {
+    var accel = event.accelerationIncludingGravity,
+      m, t;
+    if (isDebugOn()) { $('#debugMsg').text("x: " + accel.x + ", y: " + accel.y + ", z: " + accel.z); }
+    // landscape: x = -8, y = 0, z = -5
+    // portrait: x = 0, y = -8, z = -5
+    if (accel.z < -6) { m = KeyEvent.DOM_VK_F; }
+    else if (accel.z > 2) { m = KeyEvent.DOM_VK_B; }
+    else if (accel.x < -7) { // landscape orientation
+      if (accel.y > 3) { m = KeyEvent.DOM_VK_L; }
+      else if (accel.y < -3) { m = KeyEvent.DOM_VK_R; }
+    } else if (accel.x > 7) {
+      if (accel.y > 3) { m = KeyEvent.DOM_VK_R; }
+      else if (accel.y < -3) { m = KeyEvent.DOM_VK_L; }
+    }
+    else if (accel.y < -7) { // portrait orientation
+      if (accel.x > 3) { m = KeyEvent.DOM_VK_R; }
+      else if (accel.x < -3) { m = KeyEvent.DOM_VK_L; }
+    } else if (accel.y > 7) {
+      if (accel.x > 3) { m = KeyEvent.DOM_VK_L; }
+      else if (accel.x < -3) { m = KeyEvent.DOM_VK_R; }
+    }
+    if (m !== undefined) {
+      t = new Date().getTime();
+      if (lastMotionTime === undefined || (t - lastMotionTime) > 500) { // only fire every 1/2 second
+        lastMotionTime = t;
+        simulateClick(m);
+      }
+    }
+  }
+
+  // once document is ready, hook up all callbacks
   $(document).ready(function() {
-    function simulateClick(k) { keyPressed(k); setTimeout(function () { keyReleased(k); }, 200); }
     $('.up').click(function() { simulateClick(KeyEvent.DOM_VK_F); });
     $('.down').click(function() { simulateClick(KeyEvent.DOM_VK_B); });
     $('.left').click(function() { simulateClick(KeyEvent.DOM_VK_L); });
@@ -67,44 +104,10 @@ $(function () {
     $('.panLeft').click(function() { simulateClick(KeyEvent.DOM_VK_LEFT); });
     $('.panRight').click(function() { simulateClick(KeyEvent.DOM_VK_RIGHT); });
 
-    function isControlOn() { return $('#controlPanel').css('display') !== 'none'; }
-    function isDebugOn() { return $('#debugMsg').css('display') !== 'none'; }
     $('#batteryIcon').click(function() { $('#debugMsg').fadeToggle(); });
-
-    var lastMotionTime;
-    function onDeviceMotion(event) {
-      var accel = event.accelerationIncludingGravity,
-        m, t;
-      if (isDebugOn()) { $('#debugMsg').text("x: " + accel.x + ", y: " + accel.y + ", z: " + accel.z); };
-      // landscape: x = -8, y = 0, z = -5
-      // portrait: x = 0, y = -8, z = -5
-      if (accel.z < -6) { m = KeyEvent.DOM_VK_F; }
-      else if (accel.z > 2) { m = KeyEvent.DOM_VK_B; }
-      else if (accel.x < -7) { // landscape orientation
-        if (accel.y > 3) { m = KeyEvent.DOM_VK_L; }
-        else if (accel.y < -3) { m = KeyEvent.DOM_VK_R; }
-      } else if (accel.x > 7) {
-        if (accel.y > 3) { m = KeyEvent.DOM_VK_R; }
-        else if (accel.y < -3) { m = KeyEvent.DOM_VK_L; }
-      }
-      else if (accel.y < -7) { // portrait orientation
-        if (accel.x > 3) { m = KeyEvent.DOM_VK_R; }
-        else if (accel.x < -3) { m = KeyEvent.DOM_VK_L; }
-      } else if (accel.y > 7) {
-        if (accel.x > 3) { m = KeyEvent.DOM_VK_L; }
-        else if (accel.x < -3) { m = KeyEvent.DOM_VK_R; }
-      }
-      if (m !== undefined) {
-        t = new Date().getTime();
-        if (lastMotionTime === undefined || (t - lastMotionTime) > 500) { // only fire every 1/2 second
-          lastMotionTime = t;
-          simulateClick(m);
-        }
-      }
-    }
-
     $('#onoffSwitch').click(function() {
-      // the next 2 lines may seem wrong but it's because the state of isControlOn will be toggled immediately afterwards
+      // the tested condition in the next 2 lines may seem flipped but ...
+      // it's because the state of isControlOn will be toggled immediately afterwards
       $('#onoffSwitch').attr('src', isControlOn() ? '/images/onoffWhite.png' : '/images/onoffGreen.png');
       if (isControlOn()) {
         window.removeEventListener("devicemotion", onDeviceMotion, false);
@@ -113,6 +116,5 @@ $(function () {
       }
       $('#controlPanel').fadeToggle();
     });
-
   });
 });

@@ -35,7 +35,6 @@ exports.still = function stream(req, res) {
     .on('error', function (e) { console.log(e.message); res.writeHead(500); res.end(); });
 };
 
-  
 exports.stream = function stream(req, res) {
   var creq = http.get(getOption('stream', req), function (cres) {
     setNoCacheHeader('multipart/x-mixed-replace;boundary="boundarydonotcross"', res);
