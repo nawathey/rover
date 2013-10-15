@@ -6,7 +6,8 @@
 var express = require('express'),
   http = require('http'),
   app = express(),
-  server = http.createServer(app);
+  server = http.createServer(app),
+  adminUser = 'samlu';
 
 app.configure(function () {
   app.set('port', 8088);
@@ -30,7 +31,9 @@ function ensureAuthenticated(req, res, next) {
   console.log("user=" + req.session.user); 
   if (req.session.user === undefined)
     res.redirect('/');
-  else
+  else if (req.session.user.user !== adminUser)
+    res.redirect('/home');
+  else 
     next(); 
 };
 
