@@ -4,9 +4,9 @@
 
 #canvas {
   height: 100%;
-  width: 100%;
   display: flex;
   position: relative;
+  padding-bottom: 80px;
 }
 
 #stream {
@@ -75,19 +75,19 @@
 }
 
 .up{
-  bottom: 120px;
+  bottom: 200px;
   left: 150px;
 }
 .left{
-  bottom: 80px;
+  bottom: 160px;
   left: 100px;
 }
 .right{
-  bottom: 80px;
+  bottom: 160px;
   left: 200px;
 }
 .down{
-  bottom: 40px;
+  bottom: 120px;
   left: 150px;
 }
 
@@ -96,7 +96,7 @@
   width: 50px;
   margin: 0 auto;
   position: absolute;
-  bottom: 50px;
+  bottom: 130px;
   right: 100px;
 }
 
