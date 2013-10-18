@@ -4,21 +4,20 @@ block moreStyles
   link(rel='stylesheet', href='/stylesheets/drive.css')
 
 block bodyContent
-  #canvas
-    img(src='/secure/stream', alt='please wait for live streaming to start...')#stream
-    img(src='/images/onoffWhite.png', alt='on/off')#onoffSwitch
-    #controlPanel
-      p#debugMsg 
-      #buttons
-        a.ctlbtn.panLeft <
-        a.ctlbtn.panRight >
-        a.ctlbtn.up f
-        a.ctlbtn.left l
-        a.ctlbtn.right r
-        a.ctlbtn.down b
-      #status
-        img(src='/images/batterySmall.png', alt='battery')#batteryIcon
-        #volts n/a
+  img(src='/secure/stream', alt='please wait for live streaming to start...')#stream
+  img(src='/images/onoffWhite.png', alt='on/off')#onoffSwitch
+  #controlPanel
+    p#debugMsg 
+    #buttons
+      a.ctlbtn.panLeft <
+      a.ctlbtn.panRight >
+      a.ctlbtn.up f
+      a.ctlbtn.left l
+      a.ctlbtn.right r
+      a.ctlbtn.down b
+    #status
+      img(src='/images/batterySmall.png', alt='battery')#batteryIcon
+      #volts n/a
 
 block moreScripts
     script(type='text/javascript', src='/socket.io/socket.io.js')

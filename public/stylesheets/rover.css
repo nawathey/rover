@@ -18,3 +18,9 @@ body {
 .navbar .pull-right > li > a { color: #666; } /* duller color */
 
 .jumbotron { padding: 0px; }
+
+#canvas {
+  height: 100%;
+  position: relative;
+  padding-bottom: 80px;
+}
