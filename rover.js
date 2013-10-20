@@ -3,6 +3,13 @@
 /*jslint node: true, indent: 2, nomen: true */
 "use strict";
 
+/*
+require('nodetime').profile({
+ accountKey: 'c7c9be3c6eaea2ae79ba6f24c3868013c7910ad6', 
+ appName: 'Rover Node.js Application'
+});
+*/
+
 var express = require('express'),
   http = require('http'),
   app = express(),
@@ -10,7 +17,7 @@ var express = require('express'),
   adminUser = 'samlu';
 
 function ensureAuthenticated(req, res, next) {
-  console.log("user=" + req.session.user);
+  //console.log("user=" + req.session.user);
   if (req.session.user === undefined) {
     res.redirect('/');
   } else if (req.session.user.user !== adminUser) {
@@ -69,3 +76,14 @@ app.get('*', function (req, res) { res.send('<H1>404 Not Found</H1>', 404); });
 server.listen(app.get('port'), function () {
   console.log('Web server listening on port %d in %s mode', server.address().port, app.settings.env);
 });
+
+/*
+var memwatch = require('memwatch');
+var hd;
+memwatch.on('leak', function (info) { console.log('mem leak' + JSON.stringify(info)); });
+memwatch.on('stats', function (info) {
+  console.log('mem stats: ' + new Date() + ':' + JSON.stringify(info));
+  if (hd !== undefined) { console.log('mem diff: ' + JSON.stringify(hd.end())); }
+  hd = new memwatch.HeapDiff();
+});
+*/
