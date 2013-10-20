@@ -31,7 +31,7 @@ then	if 	\ps -ef | grep -v grep | grep mjpg_streamer >/dev/null 2>&1
 	then	echo experimental MJPG streamer already running
 	else	echo start experimental MJPG streamer without file system support
 		cd ~/app/mjpg-streamer-raspi/mjpg-streamer-experimental
-		nohup ./mjpg_streamer -i "input_raspicam.so -d 200 --width $w --height $h" -o "output_http.so -w ./www" >$TMP.mjpgexp.out &
+		nohup nice -n 15 ./mjpg_streamer -i "input_raspicam.so -fps 5 --width $w --height $h" -o "output_http.so -w ./www" >$TMP.mjpgexp.out &
 	fi
 else	TMPDIR=/tmp/stream
 	mkdir -p $TMPDIR 
@@ -45,6 +45,6 @@ else	TMPDIR=/tmp/stream
 	then	echo MJPG already running
 	else	echo start MJPG streamer using $TMPDIR
 		cd ~/app/mjpg-streamer/mjpg-streamer
-		nohup ./mjpg_streamer -i "input_file.so -f $TMPDIR -d 0" -o "output_http.so -w ./www" >$TMP.mjpg.out &
+		nohup nice -n 15 ./mjpg_streamer -i "input_file.so -f $TMPDIR -d 0" -o "output_http.so -w ./www" >$TMP.mjpg.out &
 	fi
 fi
