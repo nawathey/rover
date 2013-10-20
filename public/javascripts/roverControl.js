@@ -48,21 +48,22 @@ $(function () {
     return lbl;
   }
 
+  function isControlOn() { return $('#controlPanel').css('display') !== 'none'; }
+  function isDebugOn() { return $('#debugMsg').css('display') !== 'none'; }
+
   function keyPressed(k){
     var lbl = getLabel(k);
     if (lbl !== undefined) { kDown(k, lbl); }
   }
-  $(document).keydown(function(e){ keyPressed(e.which); });
+  $(document).keydown(function(e){ if (isControlOn()) { keyPressed(e.which); }});
 
   function keyReleased(k){
     var lbl = getLabel(k);
     if (lbl !== undefined) { kUp(k, lbl); }
   }
-  $(document).keyup(function(e){ keyReleased(e.which); });
+  $(document).keyup(function(e){ if (isControlOn()) { keyReleased(e.which); }});
 
   function simulateClick(k) { keyPressed(k); setTimeout(function () { keyReleased(k); }, 200); }
-  function isControlOn() { return $('#controlPanel').css('display') !== 'none'; }
-  function isDebugOn() { return $('#debugMsg').css('display') !== 'none'; }
 
   function onDeviceMotion(event) {
     var accel = event.accelerationIncludingGravity,
