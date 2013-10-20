@@ -25,7 +25,7 @@ function setNoCacheHeader(contentType, res) {
   res.setHeader('Max-Age', 0);
 }
 
-exports.still = function stream(req, res) {
+exports.still = function (req, res) {
   var creq = http.get(getOption('snapshot', req), function (cres) {
     setNoCacheHeader('image/jpeg', res);
     cres.on('data', function (chunk) { res.write(chunk); });
@@ -35,11 +35,15 @@ exports.still = function stream(req, res) {
     .on('error', function (e) { console.log(e.message); res.writeHead(500); res.end(); });
 };
 
-exports.stream = function stream(req, res) {
+exports.stream = function (req, res) {
   var creq = http.get(getOption('stream', req), function (cres) {
     setNoCacheHeader('multipart/x-mixed-replace;boundary="boundarydonotcross"', res);
     cres.on('data', function (chunk) { res.write(chunk); });
     cres.on('close', function () { res.writeHead(cres.statusCode); res.end(); });
   })
-    .on('error', function (e) { console.log(e.message); res.writeHead(500); res.end(); });
+    .on('error', function (e) {
+      console.log('proxy.js error:' + e.message);
+      res.writeHead(500);
+      res.end();
+    });
 };
