@@ -1,0 +1,16 @@
+#lsusb | grep Aveo && start_motion_daemon=yes 
+if     netstat -ln | grep :8080 # something else already running
+then   start_motion_daemon=no
+else   start_motion_daemon=yes
+fi
+
+PATH=/usr/local/bin:$PATH
+gpio mode 0 output
+[ $start_motion_daemon = yes ] && n=5 || n=3
+i=0
+while [ $i -lt $n ]
+do
+	i=$(($i+1))
+	gpio write 0 1; sleep .1; 
+	gpio write 0 0; sleep .1
+done

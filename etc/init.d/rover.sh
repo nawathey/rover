@@ -16,7 +16,7 @@ OUT=/tmp/$$.rover.log
 case "$1" in
 
 start)
-	echo "starting rover: $SERVER_START"
+	echo "\nStarting rover: $SERVER_START"
 	sudo -u $USER $SERVER_START >$OUT 2>&1 &
 	;;
 
