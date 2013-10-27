@@ -96,6 +96,11 @@ $(function () {
     }
   }
 
+  // this is obviously not secure, but gives better performance
+  $('#stream').attr('src', window.location.protocol + "//rover:passWord@" + window.location.hostname + $('#stream').attr('xsrc'));
+  // this is very secure using node as proxy, but performance is not great
+  // $('#stream').attr('src', 'still/stream');
+
   // once document is ready, hook up all callbacks
   $(document).ready(function() {
     $('.up').click(function() { simulateClick(KeyEvent.DOM_VK_F); });

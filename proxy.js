@@ -9,8 +9,9 @@ exports.use = function (o) { http = o; };
 
 function getOption(action, req) {
   return {
+    auth:   'rover:passWord',
     host:   'localhost',
-    port:   8080,
+    port:   8089,
     path:   '/?action=' + action,
     headers: req.headers
   };
