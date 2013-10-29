@@ -1,12 +1,13 @@
 #lsusb | grep Aveo && start_motion_daemon=yes 
-if     netstat -ln | grep :8080 # something else already running
+sleep 10
+if     netstat -ln | grep :8089 # something else already running
 then   start_motion_daemon=no
 else   start_motion_daemon=yes
 fi
 
 PATH=/usr/local/bin:$PATH
 gpio mode 0 output
-[ $start_motion_daemon = yes ] && n=5 || n=3
+[ $start_motion_daemon = yes ] && n=10 || n=3
 i=0
 while [ $i -lt $n ]
 do

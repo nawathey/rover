@@ -97,7 +97,9 @@ $(function () {
   }
 
   // this is obviously not secure, but gives better performance
-  $('#stream').attr('src', window.location.protocol + "//rover:passWord@" + window.location.hostname + $('#stream').attr('xsrc'));
+  var auth = $('#stream').attr('xuid') + ":" + $('#stream').attr('xpwd');
+  $('#stream').attr('src', window.location.protocol + "//" + 
+    auth + "@" + window.location.hostname + $('#stream').attr('xsrc'));
   // this is very secure using node as proxy, but performance is not great
   // $('#stream').attr('src', 'still/stream');
 

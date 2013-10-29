@@ -25,7 +25,8 @@ fi
 
 function isRunning() { if netstat -ln | grep :8080 >/dev/null 2>&1; then return 0; fi; return 1; }
 
-OUTMOD="output_http.so -w ./www -c rover:passWord -p 8089" 
+AUTH=$(perl -pe 's/{ "uid" : "//; s/" , "pwd" //; s/ "//; s/" }//' < $(dirname $0)/../mjpgIdPwd.json)
+OUTMOD="output_http.so -w ./www -c $AUTH -p 8089" 
 
 # view this with http://rpi:8080/?action=stream
 export LD_LIBRARY_PATH=./ 

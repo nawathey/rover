@@ -8,10 +8,6 @@ module.exports = function (app) {
     req.session.destroy(function (e) { res.redirect('/'); });
   });
 
-  app.get('/secure/rover', function (req, res) {
-    res.render('rover', { title: 'Raspberry Pi Rover', user: req.session.user.name });
-  });
-
   app.get('/status', function (req, res) {
     require('child_process').exec("date", function (error, stdout, stderr) {
       res.render('status', {
@@ -22,8 +18,19 @@ module.exports = function (app) {
     });
   });
 
+  function getParam(req, title) {
+    var p = require('./mjpgIdPwd.json');
+    p.title = title;
+    p.user = req.session.user.name;
+    return p;
+  }
+
+  app.get('/secure/rover', function (req, res) {
+    res.render('rover', getParam(req, 'Raspberry Pi Rover'));
+  });
+
   app.get('/secure/drive', function (req, res) {
-    res.render('drive', { title: 'Rover - Drive', user: req.session.user.name });
+    res.render('drive', getParam(req, 'Rover - Drive'));
   });
 
   app.get('/secure/stillFile', function (req, res) {

@@ -4,7 +4,7 @@ block moreStyles
   link(rel='stylesheet', href='/stylesheets/drive.css')
 
 block bodyContent
-  img(xsrc=':8089/?action=stream', alt='please wait for live streaming to start...')#stream
+  img(xsrc=':8089/?action=stream', xuid= uid, xpwd= pwd, alt='please wait for live streaming to start...')#stream
   img(src='/images/onoffWhite.png', alt='on/off')#onoffSwitch
   #controlPanel
     p#debugMsg 
