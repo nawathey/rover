@@ -8,8 +8,9 @@ var http;
 exports.use = function (o) { http = o; };
 
 function getOption(action, req) {
+  var p = require('./mjpgIdPwd.json');
   return {
-    auth:   'rover:passWord',
+    auth:   p.uid + ':' + p.pwd,
     host:   'localhost',
     port:   8089,
     path:   '/?action=' + action,
