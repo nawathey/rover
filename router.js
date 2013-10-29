@@ -19,7 +19,7 @@ module.exports = function (app) {
   });
 
   function getParam(req, title) {
-    var p = require('./mjpgIdPwd.json');
+    var p = require('./idPwd-mine.json');
     p.title = title;
     p.user = req.session.user.name;
     return p;

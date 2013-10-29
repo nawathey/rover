@@ -6,6 +6,7 @@
 *.out
 *.pid
 *.db
+*-mine.json
 
 image*.jpg
 

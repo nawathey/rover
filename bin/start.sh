@@ -25,7 +25,10 @@ fi
 
 function isRunning() { if netstat -ln | grep :8080 >/dev/null 2>&1; then return 0; fi; return 1; }
 
-AUTH=$(perl -pe 's/{ "uid" : "//; s/" , "pwd" //; s/ "//; s/" }//' < $(dirname $0)/../mjpgIdPwd.json)
+CFILE="$(dirname $0)/../idPwd-mine.json"
+[[ ! -f "$CFILE" ]] && echo "ERROR: unable to open $CFILE" >&2 && exit 1
+
+AUTH=$(perl -pe 's/{ "uid" : "//; s/" , "pwd" //; s/ "//; s/" }//' < "$CFILE")
 OUTMOD="output_http.so -w ./www -c $AUTH -p 8089" 
 
 # view this with http://rpi:8080/?action=stream

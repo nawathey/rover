@@ -8,7 +8,7 @@ var http;
 exports.use = function (o) { http = o; };
 
 function getOption(action, req) {
-  var p = require('./mjpgIdPwd.json');
+  var p = require('./idPwd-mine.json');
   return {
     auth:   p.uid + ':' + p.pwd,
     host:   'localhost',

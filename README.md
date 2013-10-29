@@ -11,11 +11,16 @@ Copy the files onto Raspberry Pi:
 
     git clone git@github.com:s8mlu/rover.git
     cd rover; npm install
+    cp idPwd.json idPwd-mine.json
+    vi idPwd-mine.json   # pick your own id/pwd, be careful to leave the format EXACTLY as is
+
+    cd ..
     git clone git@github.com:s8mlu/node-login.git
     cd node-login; npm install
     cd app/server/modules; 
     cp email-settings.js email-settings-mine.js
-    vi email-settings-mine.js # put in your own info here
+    vi email-settings-mine.js   # put in your own info here
+
 
 # Rover Usage
 
