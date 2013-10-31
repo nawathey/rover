@@ -43,7 +43,9 @@ Add this to crontab to monitor and restart the WiFi link if necessary
 
 # optional motion detection setup
 
-    Read the page https://github.com/dozencrows/motion/tree/mmal-test
+Instead of live streaming, we can also detect motion and record it on disk. Note that only a single process can access the camera at a time so 'motion' can't be run while mjpg_streamer is running.
+
+Read the page https://github.com/dozencrows/motion/tree/mmal-test
 
     cd /tmp
     wget https://www.dropbox.com/s/xdfcxm5hu71s97d/motion-mmal.tar.gz
@@ -53,7 +55,12 @@ Add this to crontab to monitor and restart the WiFi link if necessary
     sudo cp etc/motion.conf /etc
     sudo cp etc/default/motion /etc/default
 
-    Once 'motion' is running, the output files are stored in ~/log. Note that only a single process can access the camera at a time so 'motion' can't be run while mjpg_streamer is running.
+Once 'motion' is running, the output files are stored in ~/log. 
+
+Add this to crontab to ensure we don't run out of space on disk
+
+    0,5,10,15,20,25,30,35,40,45,50,55 * * * * /home/samlu/rover/bin/checkSpace.sh >> /tmp/checkSpace.log 2>&1
+
 
 # clean up
 
