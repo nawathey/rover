@@ -5,7 +5,7 @@
 
 /*
 require('nodetime').profile({
- accountKey: 'c7c9be3c6eaea2ae79ba6f24c3868013c7910ad6', 
+ accountKey: 'c7c9be3c6eaea2ae79ba6f24c3868013c7910ad6',
  appName: 'Rover Node.js Application'
 });
 */
@@ -38,8 +38,9 @@ app.configure(function () {
   app.use(express.session({ secret: 'super-duper-secret-secret' }));
   app.use(express.static(__dirname + '/public'));
   app.use('/secure', ensureAuthenticated);
+  app.use('/secure/log', express.static(__dirname + '/public/log'));
+  app.use('/secure/log', express.directory(__dirname + '/public/log'));
   app.use(app.router);
-  app.use(express.directory(__dirname + '/public'));
   app.use(function (err, req, res, next) {
     console.error(err.stack);
     res.send(500, 'Internal server error!');
