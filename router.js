@@ -18,25 +18,29 @@ module.exports = function (app) {
     });
   });
 
-  function getParam(req, title) {
+  app.get('/secure/stillFile', function (req, res) {
+    require('child_process').exec('raspistill -n -t 500 -o public/image.jpg', function (error, stdout, stderr) {
+      res.writeHead(302, {'Location': 'image.jpg'});
+      res.end();
+    });
+  });
+
+  function getJadeParam(req, title) {
     var p = require('./idPwd-mine.json');
     p.title = title;
     p.user = req.session.user.name;
     return p;
   }
 
-  app.get('/secure/rover', function (req, res) {
-    res.render('rover', getParam(req, 'Raspberry Pi Rover'));
+  app.get('/secure/home', function (req, res) {
+    res.render('roverHome', getJadeParam(req, 'Rover Home'));
   });
 
   app.get('/secure/drive', function (req, res) {
-    res.render('drive', getParam(req, 'Rover - Drive'));
+    res.render('drive', getJadeParam(req, 'Rover Drive'));
   });
 
-  app.get('/secure/stillFile', function (req, res) {
-    require('child_process').exec('raspistill -n -t 500 -o public/image.jpg', function (error, stdout, stderr) {
-      res.writeHead(302, {'Location': 'image.jpg'});
-      res.end();
-    });
+  app.get('/secure/motion', function (req, res) {
+    res.render('motion', getJadeParam(req, 'Motion Camera'));
   });
 };

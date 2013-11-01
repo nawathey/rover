@@ -34,7 +34,11 @@ exports.still = function (req, res) {
     cres.on('end', function () { res.end(); });
     cres.on('close', function () { res.writeHead(cres.statusCode); res.end(); });
   })
-    .on('error', function (e) { console.log(e.message); res.writeHead(500); res.end(); });
+    .on('error', function (e) {
+      console.log('proxy.js error:' + e.message);
+      res.writeHead(500);
+      res.end();
+    });
 };
 
 exports.stream = function (req, res) {
