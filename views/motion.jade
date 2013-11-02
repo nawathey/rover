@@ -1,0 +1,12 @@
+extends roverLayout
+
+block moreStyles
+  link(rel='stylesheet', href='/stylesheets/motion.css')
+
+block bodyContent
+  p.jumbotron Motion Detected Files
+  #files(style='display:none')
+  #pics
+
+block moreScripts
+  script(type='text/javascript', src='/javascripts/motionListing.js')

@@ -10,16 +10,22 @@ require('nodetime').profile({
 });
 */
 
-var express = require('express'),
+var url = require('url'),
+  express = require('express'),
   http = require('http'),
   app = express(),
   server = http.createServer(app),
   adminUser = 'samlu';
 
+var util = require("util");
+
 function ensureAuthenticated(req, res, next) {
-  //console.log("user=" + req.session.user);
+  console.log("header=" + util.inspect(req.headers) +
+    "\nsession=" + util.inspect(req.session) +
+    "\nuser=" + util.inspect(req.session.user));
   if (req.session.user === undefined) {
-    res.redirect('/');
+    console.log("** unauthenticated request redirected **: " + req.url);
+    res.redirect('/?pg=/secure' + url.parse(req.url).path);
   } else if (req.session.user.user !== adminUser) {
     res.redirect('/home');
   } else {
@@ -37,8 +43,8 @@ app.configure(function () {
   app.use(express.methodOverride());
   app.use(express.session({ secret: 'super-duper-secret-secret' }));
   app.use(express.static(__dirname + '/public'));
-  app.use('/secure', ensureAuthenticated);
   app.use('/secure/log', express.static(__dirname + '/public/log'));
+  app.use('/secure', ensureAuthenticated);
   app.use('/secure/log', express.directory(__dirname + '/public/log'));
   app.use(app.router);
   app.use(function (err, req, res, next) {
@@ -68,7 +74,7 @@ var hb = require('./hb.js');
 var sio = require('./sio.js');
 sio.use(server, hb);
 app.get('/secure/hb', function (req, res, hb) { // for debugging only
-  res.send(hb.rover(require('url').parse(req.url, true).query.cmd));
+  res.send(hb.rover(url.parse(req.url, true).query.cmd));
 });
 
 // custom Page not found error
