@@ -43,7 +43,7 @@ Add this to crontab to monitor and restart the WiFi link if necessary
 
 # optional motion detection setup
 
-Instead of live streaming, we can also detect motion and record it on disk. Note that only a single process can access the camera at a time so 'motion' can't be run while mjpg_streamer is running.
+Instead of live streaming, we can also detect motion and record it on disk. Note that only a single process can access the camera at a time so 'motion' can't be run while mjpg-streamer is running.
 
 Read the page https://github.com/dozencrows/motion/tree/mmal-test
 
@@ -65,3 +65,7 @@ Add this to crontab to ensure we don't run out of space on disk
 # clean up
 
     sudo apt-get clean
+
+# open issues
+
+The '/secure/log' contents are not secured, because QuickTime plug-in does not pass cookies when making the request for the avi files.

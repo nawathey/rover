@@ -20,11 +20,13 @@ var url = require('url'),
 var util = require("util");
 
 function ensureAuthenticated(req, res, next) {
+  /*
   console.log("header=" + util.inspect(req.headers) +
     "\nsession=" + util.inspect(req.session) +
     "\nuser=" + util.inspect(req.session.user));
+  */
   if (req.session.user === undefined) {
-    console.log("** unauthenticated request redirected **: " + req.url);
+    console.log("router.js: unauthenticated request redirected to " + req.url);
     res.redirect('/?pg=/secure' + url.parse(req.url).path);
   } else if (req.session.user.user !== adminUser) {
     res.redirect('/home');
