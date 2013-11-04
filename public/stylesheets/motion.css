@@ -5,6 +5,8 @@
  top: 6px;
 }
 
+#files { display: none; }
+
 .deleted { opacity: 0.2; }
 
 .selected { border: solid 2px grey; }

@@ -9,8 +9,8 @@ module.exports = function (app) {
   });
 
   app.get('/status', function (req, res) {
-    require('child_process').exec("date", function (error, stdout, stderr) {
-      res.render('status', { title: 'Rover - Status', status : "the time is " + stdout });
+    require('child_process').exec("df -h /", function (error, stdout, stderr) {
+      res.render('status', { title: 'Rover - Status', status : stdout });
     });
   });
 
