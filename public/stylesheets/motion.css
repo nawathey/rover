@@ -1,5 +1,28 @@
+#deleteButton {
+ display: none;
+ position: absolute;
+ left: 10px;
+ top: 6px;
+}
+
+.deleted { opacity: 0.2; }
+
+.selected { border: solid 2px grey; }
+
 .motionSnapshot {
   height: 180px;
   width: 240px;
   padding: 10px;
+}
+
+.closeSign {
+  position: relative;
+  left: -40px;
+  top: -60px;
+}
+
+.deletedCloseSign {
+  box-sizing: border-box;
+  background: url(/images/closeSignActive.png) no-repeat;
+  padding-left: 40px;
 }
