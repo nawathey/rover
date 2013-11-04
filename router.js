@@ -33,11 +33,8 @@ module.exports = function (app) {
   app.post('/secure/api/deleteLog', function (req, res) {
     var files = req.param("files");
     console.log('request by ' + req.session.user.user + ' to delete files ' + files);
-    for (var i = 0; i < files.length; i++) {
-      fs.unlink( __dirname + '/public/log/' + files[i], function (e) {
-        if (e) { console.log('failed to delete (' + e + ')'); }
-      });
-    }
+    function cb(e) { if (e) { console.log('failed to delete (' + e + ')'); } }
+    for (var i = 0; i < files.length; i++) { fs.unlink( __dirname + '/public/log/' + files[i], cb); }
     res.end();
   });
 };
