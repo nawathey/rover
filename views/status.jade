@@ -1,4 +1,7 @@
 extends roverLayout
 
+block moreStyles
+  link(rel='stylesheet', href='/stylesheets/status.css')
+
 block bodyContent
-  p #{status}
+  textarea.monospace #{status}
