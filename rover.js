@@ -1,6 +1,6 @@
 // rover server
 
-/*jslint node: true, indent: 2, nomen: true */
+/*jslint node: true, indent: 2, nomen: true */ // no checked for initial or trailing underbars
 "use strict";
 
 /*

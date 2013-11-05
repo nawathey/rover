@@ -1,9 +1,11 @@
 #!/opt/node/bin/node
+/*jslint node: true, indent: 2, nomen: true */
+"use strict";
 
 // test of i2c package: https://npmjs.org/package/i2c
-var i2c = require('i2c'),
+var I2c = require('i2c'),
   address = 0x20, // first MCP23017 chip
-  wire = new i2c(address, {device: '/dev/i2c-1', debug : false}),
+  wire = new I2c(address, {device: '/dev/i2c-1', debug : false}),
   val = 0;
 
 var
@@ -30,21 +32,23 @@ var
   MCP23017_GPIOB = 0x13,
   MCP23017_OLATB = 0x15;
 
-function blink() { 
-  wire.writeBytes(MCP23017_OLATA, [val++], function (err) { 
-    if (err !== null)
-      console.log('error on write ' + err); 
-    else {
-      if (val > 3) val = 0; 
-      setTimeout(blink, 500); 
+function blink() {
+  wire.writeBytes(MCP23017_OLATA, [val], function (err) {
+    if (err !== null) {
+      console.log('error on write ' + err);
+    } else {
+      val += 1;
+      if (val > 3) { val = 0; }
+      setTimeout(blink, 500);
     }
   });
 }
 
 // setup 1 input and 7 output
-wire.writeBytes(MCP23017_IODIRA, [0x80], function (err) { 
-  if (err !== undefined && err !== null)
-    console.log('error on setup ' + err); 
-  else
+wire.writeBytes(MCP23017_IODIRA, [0x80], function (err) {
+  if (err !== undefined && err !== null) {
+    console.log('error on setup ' + err);
+  } else {
     blink();
-}); 
+  }
+});

@@ -1,4 +1,4 @@
-/*jslint node: true, indent: 2*/
+/*jslint node: true, indent: 2, nomen: true*/
 "use strict";
 
 module.exports = function (app) {
@@ -31,10 +31,10 @@ module.exports = function (app) {
 
   var fs = require('fs');
   app.post('/secure/api/deleteLog', function (req, res) {
-    var files = req.param("files");
+    var files = req.param("files"), i;
     console.log('request by ' + req.session.user.user + ' to delete files ' + files);
     function cb(e) { if (e) { console.log('failed to delete (' + e + ')'); } }
-    for (var i = 0; i < files.length; i++) { fs.unlink( __dirname + '/public/log/' + files[i], cb); }
+    for (i = 0; i < files.length; i += 1) { fs.unlink(__dirname + '/public/log/' + files[i], cb); }
     res.end();
   });
 };
