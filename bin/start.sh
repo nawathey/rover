@@ -34,7 +34,7 @@ CFILE="$(dirname $0)/../idPwd-mine.json"
 [[ ! -f "$CFILE" ]] && echo "ERROR: unable to open $CFILE" >&2 && exit 1
 
 AUTH=$(perl -pe 's/{ "uid" : "//; s/" , "pwd" //; s/ "//; s/" }//' < "$CFILE")
-OUTMOD="output_http.so -w ./www -c $AUTH -p $PORT" 
+OUTMOD="output_http.so -w ./www -c $AUTH -p $MJPG_PORT" 
 
 # view this with http://rpi:8080/?action=stream
 export LD_LIBRARY_PATH=./ 
