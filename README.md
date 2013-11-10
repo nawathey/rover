@@ -1,13 +1,17 @@
-ROVER
-=====
+Rover Pi
+========
 
 A [Raspberry Pi](http://www.raspberrypi.org) home monitoring experiment.
 
-It runs in 1 of 2 different modes:
-+ Roving platform controlled by [Handy Board](http://www.handyboard.com/) with the Camera Module on top
-+ Standalone Camera Module with motion capture software
+It runs in one of the following modes:
++ Mobile platform controlled by [Handy Board](http://www.handyboard.com/) with the camera on top
++ Standalone surveillance camera with motion capture and recording
 
-# Installation
+# Hardware
+
+[TODO]
+
+# Software Installation
 
 Needless to say you need to first get a Raspberry Pi with the latest Raspbian OS.
 
@@ -62,10 +66,14 @@ Add this to crontab to ensure we don't run out of space on disk
 
     0,5,10,15,20,25,30,35,40,45,50,55 * * * * /home/samlu/rover/bin/checkSpace.sh >> /tmp/checkSpace.log 2>&1
 
-# Automated startup
+# Automatic startup on reboot
 
     sudo cp -pr etc /etc
-    [TODO]
+    sudo update-rc.d motion defaults
+    sudo update-rc.d rover.sh defaults
+
+Disable rover streaming if you wish to use the surveillance motion capture mode:
+    sudo update-rc.d rover.sh disable   
 
 # Clean up
 
@@ -77,5 +85,5 @@ I following [these instructions](http://stackoverflow.com/questions/473478/vim-j
 
 # Open issues
 
-* The videos are encoded in msmpeg4 format, which enables Safari on Mac OS and any browser on Windows to play them, but iOS devices can't
+* The videos are encoded in msmpeg4 format, which enables Safari on Mac OS and any browser on Windows to play them, but won't play on iOS devices
 * The files under '/log' are not secured, because QuickTime plug-in does not pass cookies when making the request for the avi files. That said, the filenames are obscure enought that it'll be hard for anyone to guess and download the images.

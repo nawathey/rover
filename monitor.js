@@ -6,13 +6,13 @@
 
 try {
   var g17 = require("gpio").export(17, {
-    direction: 'out',
+    direction: "out",
     interval: 200,
   });
   exports.use = function (io) {
     setInterval(function () {
       var n = Object.keys(io.sockets.manager.connected).length;
-  //      console.log('monitor: ' + n);
+  //      console.log("monitor: " + n);
       if (n > 0) {
         g17.set();
         setTimeout(function () { g17.reset(); }, 10);
@@ -21,6 +21,6 @@ try {
   };
 } catch (e) {
   exports.use = function (io) {
-    console.log('running without gpio module, monitoring disabled');
+    console.log("running without gpio module, monitoring disabled");
   };
 }
