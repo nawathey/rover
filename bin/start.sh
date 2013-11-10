@@ -28,7 +28,10 @@ else	cd ~/rover
 	nohup /opt/node/bin/node rover.js >$TMP.node.out &
 fi
 
-# exit # do not run mjpg-streamer because we're running motion detection
+if      [[ ! -e /dev/ttyUSB0 ]] 
+then    echo 'no serial port, not starting mjpg streamer'
+        exit # do not run mjpg-streamer if no rover connected so we can run motion
+fi
 
 CFILE="$(dirname $0)/../idPwd-mine.json"
 [[ ! -f "$CFILE" ]] && echo "ERROR: unable to open $CFILE" >&2 && exit 1
