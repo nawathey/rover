@@ -54,11 +54,13 @@
         $(p).append("<h4>" + dt + "</h4>");
         prevDt = dt;
       }
-      $(p).append("<a href='" + dir + "/" + flist[n].avi + "' " +
-        "xfn='" + n + "'>" +
-        "<img class='motionSnapshot' src='" + dir + "/" + fName + "'" +
-        "Title='" + t + "' /></a>");
-      $(p).append("<img class='closeSign' src='/images/closeSign.png'" + fName + "'/>");
+      $(p).append(
+        "<span style='display:inline-block'>" + // inline block prevents X from wrapping to next line
+          "<a href='" + dir + "/" + flist[n].avi + "' " + "xfn='" + n + "'>" +
+          "<img class='motionSnapshot' src='" + dir + "/" + fName + "'" + "title='" + t + "' /></a>" +
+          "<img class='closeSign' src='/images/closeSign.png'" + fName + "'/>" +
+          "</span>"
+      );
     }
 
     $(".motionSnapshot").hover(
@@ -68,7 +70,11 @@
 
     $(".closeSign").hover(
       function () { $(this).attr("src", "/images/closeSignActive.png"); },
-      function () { if (!$(this).prev().hasClass("deleted")) { $(this).attr("src", "/images/closeSign.png"); } }
+      function () {
+        if (!$(this).prev().hasClass("deleted")) {
+          $(this).attr("src", "/images/closeSign.png");
+        }
+      }
     );
     $(".closeSign").on("click", function () {
       $(this).prev().toggleClass("deleted");
