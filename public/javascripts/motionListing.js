@@ -4,6 +4,7 @@
 (function () {
   "use strict";
   var dir = "/secure/log", i;
+
   $.ajaxSetup({ cache: false });
   $("#files").load(dir + " #files", null, function () {
     // files is a UL with LI items under it
@@ -35,7 +36,7 @@
     });
     //console.log("flist=" + JSON.stringify(flist));
     // order the files
-    flistOrder.sort(function (a, b) { return a - b; });
+    flistOrder.sort(function (a, b) { return b - a; });
     // then show the static images corresponding to the video files
     for (i = 0; i < flistOrder.length; i += 1) {
       var n = flistOrder[i],
@@ -67,6 +68,12 @@
       function () { $(this).toggleClass("selected"); },
       function () { $(this).toggleClass("selected"); }
     );
+    if (/Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)) {
+      $(".motionSnapshot").on("click", function () {
+        alert("Chrome browser cannot play motion captured videos in mpeg4 format. Use Safari or IE instead.");
+        return false;
+      })
+    };
 
     $(".closeSign").hover(
       function () { $(this).attr("src", "/images/closeSignActive.png"); },
