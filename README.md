@@ -7,15 +7,17 @@ It runs in one of the following modes:
 + Mobile platform controlled by [Handy Board](http://www.handyboard.com/) with the camera on top
 + Standalone surveillance camera with motion capture and recording
 
+There is a [web interface](#web-interface) powered by [Node.js](http://nodejs.org) that controls everything.
+
 # Hardware
 
-[TODO]
+[To be described later]
 
 # Software Installation
 
 Needless to say you need to first get a Raspberry Pi with the latest Raspbian OS.
 
-Install [Node.js](http://nodejs.org). 
+Install [Node.js](http://nodejs.org).
 
 Install [MJPG-Streamer for Raspberry Pi](https://github.com/jacksonliam/mjpg-streamer.git).
 
@@ -23,7 +25,7 @@ Login to the Raspberry Pi and clone the files from GitHub:
 
     git clone git@github.com:s8mlu/node-login.git
     cd node-login; npm install
-    cd app/server/modules; 
+    cd app/server/modules;
     cp email-settings.js email-settings-mine.js
     vi email-settings-mine.js   # put in your own info here
 
@@ -35,24 +37,21 @@ Login to the Raspberry Pi and clone the files from GitHub:
 
 # Rover setup
 
-To avoid wear out the SSD, setup /tmp as tmpfs
+To avoid wear out the SSD, setup /tmp as tmpfs:
 
     sudo vi /etc/default/tmpfs
-    
-To enable auto start on reboot, add to init.d:
 
-    sudo cp etc/init.d/rover.sh /etc/init.d
-    sudo update-rc.d rover.sh defaults
-
-Add this to crontab to monitor and restart the WiFi link if necessary
+Add this to crontab to monitor and restart the WiFi link if necessary:
 
     0,5,10,15,20,25,30,35,40,45,50,55 * * * * /home/samlu/rover/bin/checkWlan.sh >> /tmp/checkWlan.log 2>&1
+
+Reboot:
 
 # Motion detection setup
 
 Instead of live streaming, we can detect motion and record it on disk. Note that only a single process can access the camera at a time so 'motion' can't be run while 'mjpg-streamer' is running.
 
-Follow the instruction to install [motion](https://github.com/dozencrows/motion/tree/mmal-test)
+Follow the instruction to install [motion](https://github.com/dozencrows/motion/tree/mmal-test):
 
     cd /tmp
     wget https://www.dropbox.com/s/xdfcxm5hu71s97d/motion-mmal.tar.gz
@@ -60,22 +59,50 @@ Follow the instruction to install [motion](https://github.com/dozencrows/motion/
     sudo mv motion /usr/bin
     sudo apt-get install libjpeg62
 
-Once 'motion' is running, the output files are stored in public/log. 
+Once 'motion' is running, the raw output files are stored in public/log. You can view them view them using the 'Motion' tab of the [web interface](#web-interface).
 
-Add this to crontab to ensure we don't run out of space on disk
+Add this to crontab, which will delete old motion capture files periodically when space is running low on disk:
 
     0,5,10,15,20,25,30,35,40,45,50,55 * * * * /home/samlu/rover/bin/checkSpace.sh >> /tmp/checkSpace.log 2>&1
 
 # Automatic startup on reboot
 
+To enable everything to start automatically upon reboot:
+
     sudo cp -pr etc /etc
     sudo update-rc.d motion defaults
     sudo update-rc.d rover.sh defaults
 
-Disable rover streaming if you wish to use the surveillance motion capture mode:
-    sudo update-rc.d rover.sh disable   
+By default, if USB serial port is connected, rover start.sh will run 'mjpg-streamer'. In that case, motion capture is automatically disabled, because '/etc/default/motion' checks if port is already in use.
 
-# Clean up
+To enable motion capture even with USB serial port connected, you'd have to manually kill streamer and start motion:
+
+    killall mjpg_streamer
+    sudo /etc/init.d/motion start
+
+If you wish to use the surveillance motion capture mode permanently, you can disable rover streaming mode:
+
+    sudo update-rc.d rover.sh disable
+
+# Web interface
+
+Once everything is setup and running, point a browser at 'http://<hostname>:8088' to view the main web interface. You can create an account to access it.
+
+Note that in order to play back the mpeg-4 files captured by motion, you'll need to use Safari or IE, not Chrome.
+
+If you wish to view this outside of the local area network, you should enable port-forwarding on your router of these 2 ports: 8088 (the main web interface) and 8089 (for live mjpg-streamer).
+
+If you're running motion detection, there is also port 8080 and 8081 to view the admin console and live capture respectively. Don't open these outside of your local area network since they are not secured.
+
+
+# Update and clean up
+
+Periodically, it's good to update the Raspbian OS:
+
+    sudo apt-get update
+    sudo apt-get upgrade
+
+After installation is all done, you'll want to remove left-over files from 'apt-get' to conserve space:
 
     sudo apt-get clean
 
@@ -85,5 +112,7 @@ I following [these instructions](http://stackoverflow.com/questions/473478/vim-j
 
 # Open issues
 
-* The videos are encoded in msmpeg4 format, which enables Safari on Mac OS and any browser on Windows to play them, but won't play on iOS devices
+* The motion captured videos are encoded in msmpeg4 format. Safari on Mac OS and any browser on Windows can play them, but not an iOS device.
+* Motion capture performance is poor due to Raspberry Pi lack of CPU power, only 2 frames per second maximum.
 * The files under '/log' are not secured, because QuickTime plug-in does not pass cookies when making the request for the avi files. That said, the filenames are obscure enought that it'll be hard for anyone to guess and download the images.
+* Should create an installation script so that 'samlu' doesn't have to be hard coded in places.
