@@ -32,8 +32,11 @@ Login to the Raspberry Pi and clone the files from GitHub:
     cd ..
     git clone git@github.com:s8mlu/rover.git
     cd rover; npm install
+
+The last bit is to just pick an ID and password to secure the socket between Node.js and mjpg-streamer:
+
     cp idPwd.json idPwd-mine.json
-    vi idPwd-mine.json   # pick your own id/pwd, be careful to leave the format EXACTLY as is
+    vi idPwd-mine.json   # pick your own id/pwd for , be careful to leave the format EXACTLY as is
 
 # Rover setup
 
@@ -59,7 +62,7 @@ Follow the instruction to install [motion](https://github.com/dozencrows/motion/
     sudo mv motion /usr/bin
     sudo apt-get install libjpeg62
 
-Once 'motion' is running, the raw output files are stored in public/log. You can view them view them using the 'Motion' tab of the [web interface](#web-interface).
+Once 'motion' is running, the raw output files are stored in public/log. You can use 'Live' and 'Motion' on the [web interface](#web-interface) menu to view the live or captured files respectively.
 
 Add this to crontab, which will delete old motion capture files periodically when space is running low on disk:
 

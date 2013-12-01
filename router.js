@@ -1,7 +1,8 @@
 /*jslint node: true, indent: 2, nomen: true*/
-"use strict";
 
 module.exports = function (app) {
+  "use strict";
+  
   app.get("/logout", function (req, res) {
     res.clearCookie("user");
     res.clearCookie("pass");
@@ -23,11 +24,14 @@ module.exports = function (app) {
     var p = require("./idPwd-mine.json");
     p.title = title;
     p.user = req.session.user.name;
+    p.headers = req.headers;
+    //console.log("headers = " + JSON.stringify(req.headers) + ", param = " + JSON.stringify(p));
     return p;
   }
   app.get("/secure/home", function (req, res) { res.render("roverHome", getJadeParam(req, "Rover Home")); });
   app.get("/secure/drive", function (req, res) { res.render("drive", getJadeParam(req, "Rover Drive")); });
-  app.get("/secure/motion", function (req, res) { res.render("motion", getJadeParam(req, "Motion Camera")); });
+  app.get("/secure/motion", function (req, res) { res.render("motion", getJadeParam(req, "Motion Captured")); });
+  app.get("/secure/live", function (req, res) { res.render("live", getJadeParam(req, "Live Camera")); });
 
   var fs = require("fs");
   app.post("/secure/api/deleteLog", function (req, res) {
