@@ -6,4 +6,4 @@ block moreStyles
 block bodyContent
   url = "http://" + headers.host.replace("8088", "8081");
   //- console.log("live.jade: headers = " + JSON.stringify(headers) + ", url = " + url);
-  iframe(src='#{url}')
+  img(src='#{url}')
