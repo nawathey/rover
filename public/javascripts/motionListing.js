@@ -1,5 +1,5 @@
-/*jslint browser: true, indent: 2, vars: true*/
-/*global  $, console */
+/*jslint browser: true, indent: 2*/
+/*global  $, console, alert */
 
 (function () {
   "use strict";
@@ -19,10 +19,15 @@
     // so first get the jpg and avi files
     $(liElements).each(function (index) {
       var fName = $(this).text(),
-        a = fName.split(/[\-\.]/);
+        a = fName.split(/[\-\.]/),
+        n,
+        d,
+        e;
       //console.log("working on " + a);
       if (a.length >= 3) {
-        var n = a[0], d = a[1], e = a[a.length - 1];
+        n = a[0];
+        d = a[1];
+        e = a[a.length - 1];
         if (e === "avi") {
           flist[n] = flist[n] || {};
           flist[n].avi = fName;
@@ -34,46 +39,51 @@
         }
       }
     });
-    //console.log("flist=" + JSON.stringify(flist));
-    // order the files
+
+    // sort the files in reverse chronological order
     flistOrder.sort(function (a, b) { return b - a; });
+
+    // add the key frame with link to video
+    function addClip(n) {
+      var d, t, dt, v;
+      if (flist[n].jpg && flist[n].avi) {
+        d = flist[n].dt;
+        if (d.length === 14) {
+          dt = d.substring(4, 6) + "/" + d.substring(6, 8) + "/" + d.substring(0, 4);
+          t = d.substring(8, 10) + ":" + d.substring(10, 12) + ":" + d.substring(12, 14);
+        } else {
+          t = d; // just in case file name is not properly formatted
+        }
+        if (dt !== prevDt) {
+          $(p).append("<h4>" + dt + "</h4>");
+          prevDt = dt;
+        }
+        $(p).append("<span style='display:inline-block'>" + // inline block prevents X from wrapping to next line
+            "<img class='motionSnapshot' src='" + dir + "/" + flist[n].jpg + "'" +
+            " title='" + t + "'" +
+            " xfn='" + n + "'/>" +
+            "<img class='closeSign' src='/images/closeSign.png'/>" +
+            "</span>");
+      }
+    }
+
     // then show the static images corresponding to the video files
     for (i = 0; i < flistOrder.length; i += 1) {
-      var n = flistOrder[i],
-        fName = flist[n].jpg,
-        d = flist[n].dt;
-      if (!flist[n].avi) {
-        console.log("no corresponding avi file for " + fName);
-        return;
-      }
-      var t = d, dt;
-      if (d.length === 14) {
-        dt = d.substring(4, 6) + "/" + d.substring(6, 8) + "/" + d.substring(0, 4);
-        t = d.substring(8, 10) + ":" + d.substring(10, 12) + ":" + d.substring(12, 14);
-      }
-      if (dt !== prevDt) {
-        $(p).append("<h4>" + dt + "</h4>");
-        prevDt = dt;
-      }
-      $(p).append(
-        "<span style='display:inline-block'>" + // inline block prevents X from wrapping to next line
-          "<a href='" + dir + "/" + flist[n].avi + "' " + "xfn='" + n + "'>" +
-          "<img class='motionSnapshot' src='" + dir + "/" + fName + "'" + "title='" + t + "' /></a>" +
-          "<img class='closeSign' src='/images/closeSign.png'" + fName + "'/>" +
-          "</span>"
-      );
+      addClip(flistOrder[i]);
     }
 
     $(".motionSnapshot").hover(
       function () { $(this).toggleClass("selected"); },
       function () { $(this).toggleClass("selected"); }
     );
-    if (/Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)) {
-      $(".motionSnapshot").on("click", function () {
+    $(".motionSnapshot").on("click", function () {
+      if (/Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)) {
         alert("Chrome browser cannot play motion captured videos in mpeg4 format. Use Safari or IE instead.");
         return false;
-      })
-    };
+      }
+      var n = $(this).attr("xfn");
+      window.open(dir + "/" + flist[n].avi, "_blank", "fullscreen=yes");
+    });
 
     $(".closeSign").hover(
       function () { $(this).attr("src", "/images/closeSignActive.png"); },
