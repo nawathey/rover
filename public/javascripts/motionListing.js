@@ -55,11 +55,15 @@
           t = d; // just in case file name is not properly formatted
         }
         if (dt !== prevDt) {
-          $(p).append("<h4>" + dt + "</h4>");
+          $(p).append("<div>" + // inline block prevents X from wrapping to next line
+            "<h4 style='display:inline-block'>" + dt + "</h4>" +
+            "<img class='deleteDate' src='/images/closeSign.png'/>" +
+            "</div>");
           prevDt = dt;
         }
         $(p).append("<span style='display:inline-block'>" + // inline block prevents X from wrapping to next line
             "<img class='motionSnapshot' src='" + dir + "/" + flist[n].jpg + "'" +
+            " dt='" + dt + "'" +
             " title='" + t + "'" +
             " xfn='" + n + "'/>" +
             "<img class='closeSign' src='/images/closeSign.png'/>" +
@@ -84,8 +88,8 @@
       var n = $(this).attr("xfn");
       window.open(dir + "/" + flist[n].avi, "_blank", "fullscreen=yes");
     });
-
-    $(".closeSign").hover(
+  /*
+    $(".closeSign, .deleteDate").hover(
       function () { $(this).attr("src", "/images/closeSignActive.png"); },
       function () {
         if (!$(this).prev().hasClass("deleted")) {
@@ -93,14 +97,25 @@
         }
       }
     );
+  */
     $(".closeSign").on("click", function () {
       $(this).prev().toggleClass("deleted");
+      $("#deleteButton").css("display", $(".deleted").length > 0 ? "inline" : "none");
+    });
+    $(".deleteDate").on("click", function () {
+      var dt = $(this).prev().html();
+      $(this).prev().toggleClass("deleted");
+      $(".motionSnapshot").each(function (index) {
+        if (dt === $(this).attr("dt")) {
+          $(this).toggleClass("deleted");
+        }
+      });
       $("#deleteButton").css("display", $(".deleted").length > 0 ? "inline" : "none");
     });
 
     $("#deleteButton").on("click", function () {
       var files = [];
-      $(".deleted").each(function (index) {
+      $(".motionSnapshot.deleted").each(function (index) {
         var n = $(this).attr("xfn");
         files.push(flist[n].jpg, flist[n].avi);
       });

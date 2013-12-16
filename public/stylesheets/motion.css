@@ -17,6 +17,12 @@
   padding: 10px;
 }
 
+.deleteDate {
+  position: relative;
+  left: 5px;
+  top: -2px;
+}
+
 .closeSign {
   position: relative;
   left: -40px;
