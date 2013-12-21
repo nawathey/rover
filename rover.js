@@ -15,7 +15,7 @@ var url = require("url"),
   http = require("http"),
   app = express(),
   server = http.createServer(app),
-  adminUser = "samlu",
+  adminUser = process.env.USER,
   util = require("util");
 
 function ensureAuthenticated(req, res, next) {
