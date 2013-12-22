@@ -9,23 +9,18 @@
 ### END INIT INFO
 
 USER=samlu
-SERVER_JSDIR=/home/$USER/rover
-SERVER_START=$SERVER_JSDIR/bin/start.sh
-OUT=/tmp/$$.rover.log
 
 case "$1" in
-
 start)
-	echo "\nStarting rover: $SERVER_START"
-	sudo -u $USER $SERVER_START >$OUT 2>&1 &
+	echo "\nStarting rover..."
+        /home/$USER/rover/bin/cron.sh >>/tmp/cron.$$.log 2>&1
+	sudo -u $USER /home/$USER/rover/bin/start.sh >>/tmp/rover.$$.log 2>&1 &
 	;;
-
 stop)
 	killall node
 	killall raspistill
 	killall mjpg_streamer
 	;;
-
 *)
 	echo "usage: $0 (start|stop)"
 esac

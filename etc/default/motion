@@ -1,17 +1,20 @@
 #lsusb | grep Aveo && start_motion_daemon=yes 
-sleep 10
-if     netstat -ln | grep :8089 # something else already running
-then   start_motion_daemon=no
-else   start_motion_daemon=yes
-fi
+
+sleep 10 # have to wait until nodejs starts to see if it wants to use the camera for rover
+
+start_motion_daemon=yes
+netstat -ln | grep :8089  && start_motion_daemon=no # rover already start mjpg_streamer on that port
+raspistill -v 2>&1 | grep 'Camera is not detected' && start_motion_daemon=no # no camera attached
 
 PATH=/usr/local/bin:$PATH
 gpio mode 0 output
-[ $start_motion_daemon = yes ] && n=10 || n=3
-i=0
-while [ $i -lt $n ]
-do
-	i=$(($i+1))
-	gpio write 0 1; sleep .1; 
-	gpio write 0 0; sleep .1
-done
+[ $start_motion_daemon = yes ] && n=5 || n=2
+(
+  i=0
+  while [ $i -lt $n ]
+  do
+          i=$(($i+1))
+          gpio write 0 1; sleep .1; 
+          gpio write 0 0; sleep .2
+  done 
+) &

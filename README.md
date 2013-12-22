@@ -52,12 +52,6 @@ To avoid wear out the SSD, setup /tmp as tmpfs:
 
     sudo vi /etc/default/tmpfs
 
-Add this to crontab to monitor and restart the WiFi link if necessary:
-
-    0,5,10,15,20,25,30,35,40,45,50,55 * * * * /home/samlu/rover/bin/checkWlan.sh >> /tmp/checkWlan.log 2>&1
-
-Reboot:
-
 # Motion detection setup
 
 Instead of live streaming, we can detect motion and record it on disk. Note that only a single process can access the camera at a time so 'motion' can't be run while 'mjpg-streamer' is running.
@@ -71,10 +65,6 @@ Follow the instruction to install [motion](https://github.com/dozencrows/motion/
     sudo apt-get install libjpeg62
 
 Once 'motion' is running, the raw output files are stored in public/log. You can use 'Live' and 'Motion' on the [web interface](#web-interface) menu to view the live or captured files respectively.
-
-Add this to crontab, which will delete old motion capture files periodically when space is running low on disk:
-
-    0,5,10,15,20,25,30,35,40,45,50,55 * * * * /home/samlu/rover/bin/checkSpace.sh >> /tmp/checkSpace.log 2>&1
 
 ## Optional email setup
 
