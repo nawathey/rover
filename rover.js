@@ -1,9 +1,9 @@
-// rover server
+// Node.js main
 
-/*jslint node: true, indent: 2, nomen: true */ // no checked for initial or trailing underbars
+/*jslint node: true, indent: 2, nomen: true*/ // no checked for initial or trailing underbars
 "use strict";
 
-/*
+/* Nodetime memory leak detector setup
 require("nodetime").profile({
  accountKey: "c7c9be3c6eaea2ae79ba6f24c3868013c7910ad6",
  appName: "Rover Node.js Application"
@@ -25,7 +25,7 @@ function ensureAuthenticated(req, res, next) {
     "\nuser=" + util.inspect(req.session.user));
   */
   if (req.session.user === undefined) {
-    console.log("rover.js: unauthenticated request redirected to " + req.url);
+    console.log("rover.js: unauthenticated request to /secure/" + req.url + " is being redirected");
     res.redirect("/?pg=/secure" + url.parse(req.url).path);
   } else if (req.session.user.user !== adminUser) {
     res.redirect("/home");
@@ -44,7 +44,9 @@ app.configure(function () {
   app.use(express.methodOverride());
   app.use(express.session({ secret: "super-duper-secret-secret" }));
   app.use(express.static(__dirname + "/public"));
+  // we have to allow individual files to be served unauthenticated for browser to open video files directly
   app.use("/secure/log", express.static(__dirname + "/public/log"));
+  // after this point the user must authenticate first, in order to be served
   app.use("/secure", ensureAuthenticated);
   app.use("/secure/log", express.directory(__dirname + "/public/log"));
   app.use(app.router);
@@ -70,13 +72,16 @@ proxy.use(http);
 app.get("/secure/still", proxy.still);
 app.get("/secure/stream", proxy.stream);
 
-// socket IO event handler
+// Handyboard serial interface
 var hb = require("./hb.js");
-var sio = require("./sio.js");
-sio.use(server, hb);
 app.get("/secure/hb", function (req, res, hb) { // for debugging only
   res.send(hb.rover(url.parse(req.url, true).query.cmd));
 });
+var hbSio = require("./hbSio.js")(server, hb);
+require("./monitorDriver.js")(hbSio);
+
+// alarm monitor
+require("./monitorAlarm.js")();
 
 // custom Page not found error
 app.get("*", function (req, res) { res.send("<H1>404 Not Found</H1>", 404); });

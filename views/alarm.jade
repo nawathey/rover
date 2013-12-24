@@ -1,0 +1,13 @@
+extends roverLayout
+
+block moreStyles
+  link(rel='stylesheet', href='/stylesheets/alarm.css')
+
+block bodyContent
+  p.jumbotron Home Alarm Status - #{alarmStatus}
+    button#armButton.btn.btn-danger Arm System
+  #zones
+  #pics
+
+block moreScripts
+  script(type='text/javascript', src='/javascripts/alarm.js')

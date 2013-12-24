@@ -2,17 +2,11 @@
 #
 # start the rover server side
 #
-# setup RAMTMP and TMPFS_SIZE by:
-# sudo vi /etc/default/tmpfs
-#
 
-exp=1
+exp=1 # experimental mode, works better than the still based streaming
 [[ "$1" = "file" ]] && exp=0 && shift
 [[ "$1" ]] && w="$1" || w=640
 [[ "$2" ]] && h="$2" || h=480
-
-# enable LED output port
-gpio export 17 out
 
 TMP=/tmp/$$
 NODE_PORT=8088
@@ -21,7 +15,12 @@ MJPG_PORT=8089
 
 function isListening() { if netstat -ln | grep :$1 >/dev/null 2>&1; then return 0; fi; return 1; }
 
-# run node
+# setup GPIO 
+gpio mode 0 output
+# setup I2C
+. $(dirname $0)/i2cSetup.sh
+
+# run nodejs
 if 	isListening $NODE_PORT
 then	echo node already running
 else	cd ~/rover
@@ -39,10 +38,10 @@ CFILE="$(dirname $0)/../idPwd-mine.json"
 AUTH=$(perl -pe 's/{ "uid" : "//; s/" , "pwd" //; s/ "//; s/" }//' < "$CFILE")
 OUTMOD="output_http.so -w ./www -c $AUTH -p $MJPG_PORT" 
 
-# view this with http://rpi:8080/?action=stream
+# view video via http://rpi:8080/?action=stream
 export LD_LIBRARY_PATH=./ 
 
-if	(( exp == 1 )) 	# experimental, does not work
+if	(( exp == 1 )) 	# experimental mode
 then	if 	isListening $MJPG_PORT || isListening $MOTION_PORT
 	then	echo mjpg or motion already running
 	else	echo start experimental MJPG streamer without file system support

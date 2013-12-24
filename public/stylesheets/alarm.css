@@ -1,0 +1,7 @@
+#armButton {
+ position: absolute;
+ left: 10px;
+ top: 6px;
+}
+
+#zones { display: none; }

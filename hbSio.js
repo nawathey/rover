@@ -1,18 +1,15 @@
 // socket IO event handler
 
-/*jslint node: true, indent: 2, nomen: true */
+/*jslint node: true, indent: 2*/
 "use strict";
 
-exports.use = function (server, hb) {
-  var io = require("socket.io").listen(server),
+module.exports = function (server, hb) {
+  var sio = require("socket.io").listen(server),
     statusInProgress = false;
 
-  io.set("log level", 2); // 2=INFO, 3=DEBUG
+  sio.set("log level", 2); // 2=INFO, 3=DEBUG
 
-  // flash LED if there are users logged in
-  require("./monitor.js").use(io);
-
-  io.sockets.on("connection", function (socket) {
+  sio.sockets.on("connection", function (socket) {
     try {
       hb.onStatus(function (o) { socket.emit("status", o); });
     } catch (e) {
@@ -59,4 +56,6 @@ exports.use = function (server, hb) {
     socket.on("keyup", function (dir) {
     });
   });
+
+  return sio;
 };

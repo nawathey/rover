@@ -1,7 +1,6 @@
-// starts a monitoring loop
-// flash LED if there are users connected
+// starts a monitoring loop to flash LED if users are driving Handyboard
 
-/*jslint node: true, indent: 2, nomen: true */
+/*jslint node: true, indent: 2*/
 "use strict";
 
 try {
@@ -9,10 +8,9 @@ try {
     direction: "out",
     interval: 200,
   });
-  exports.use = function (io) {
+  module.exports = function (io) {
     setInterval(function () {
       var n = Object.keys(io.sockets.manager.connected).length;
-  //      console.log("monitor: " + n);
       if (n > 0) {
         g17.set();
         setTimeout(function () { g17.reset(); }, 10);
@@ -20,7 +18,7 @@ try {
     }, 1000);
   };
 } catch (e) {
-  exports.use = function (io) {
+  module.exports = function (io) {
     console.log("running without gpio module, monitoring disabled");
   };
 }

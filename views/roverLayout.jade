@@ -17,14 +17,17 @@ html
         li
           a(href='/secure/home') Home
         li
-          a(href='/secure/drive') Drive
-        li
           a(href='/secure/motion') Motion 
         li
           a(href='/secure/live') Live 
+        if (global.roverConnected)
+          li
+            a(href='/secure/roverHome') Rover
+          li
+            a(href='/secure/drive') Drive
+      ul.nav.navbar-nav.pull-right
         li
           a(href='/status') Status
-      ul.nav.navbar-nav.pull-right
         li
           a(href='/home') Account
         li

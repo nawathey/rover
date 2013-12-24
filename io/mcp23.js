@@ -1,4 +1,4 @@
-#!/opt/node/bin/node
+!/opt/node/bin/node
 /*jslint node: true, indent: 2*/
 "use strict";
 
@@ -44,8 +44,8 @@ function blink() {
   });
 }
 
-// setup 1 input and 7 output
-wire.writeBytes(MCP23017_IODIRA, [0x80], function (err) {
+// setup 6 input and 2 output
+wire.writeBytes(MCP23017_IODIRA, [0xFC], function (err) {
   if (err !== undefined && err !== null) {
     console.log('error on setup ' + err);
   } else {

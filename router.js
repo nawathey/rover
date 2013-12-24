@@ -2,17 +2,11 @@
 
 module.exports = function (app) {
   "use strict";
-  
+
   app.get("/logout", function (req, res) {
     res.clearCookie("user");
     res.clearCookie("pass");
     req.session.destroy(function (e) { res.redirect("/"); });
-  });
-
-  app.get("/status", function (req, res) {
-    require("child_process").exec("df -h /", function (error, stdout, stderr) {
-      res.render("status", { title: "Rover - Status", status : stdout });
-    });
   });
 
   app.get("/secure/stillFile", function (req, res) {
@@ -28,10 +22,21 @@ module.exports = function (app) {
     //console.log("headers = " + JSON.stringify(req.headers) + ", param = " + JSON.stringify(p));
     return p;
   }
-  app.get("/secure/home", function (req, res) { res.render("roverHome", getJadeParam(req, "Rover Home")); });
-  app.get("/secure/drive", function (req, res) { res.render("drive", getJadeParam(req, "Rover Drive")); });
+  app.get("/secure/home", function (req, res) { res.render("alarm", getJadeParam(req, "Home")); });
   app.get("/secure/motion", function (req, res) { res.render("motion", getJadeParam(req, "Motion Captured")); });
   app.get("/secure/live", function (req, res) { res.render("live", getJadeParam(req, "Live Camera")); });
+  app.get("/secure/roverHome", function (req, res) { res.render("roverHome", getJadeParam(req, "Rover Home")); });
+  app.get("/secure/drive", function (req, res) { res.render("drive", getJadeParam(req, "Rover Drive")); });
+
+  app.get("/status", function (req, res) {
+    require("child_process").exec("df -h /", function (error, stdout, stderr) {
+      var p = getJadeParam(req, "Status");
+      p.status = stdout;
+      res.render("status", p);
+    });
+  });
+
+  // start of RESTful API
 
   var fs = require("fs");
   app.post("/secure/api/deleteLog", function (req, res) {
@@ -39,6 +44,11 @@ module.exports = function (app) {
     console.log("request by " + req.session.user.user + " to delete files " + files);
     function cb(e) { if (e) { console.log("failed to delete (" + e + ")"); } }
     for (i = 0; i < files.length; i += 1) { fs.unlink(__dirname + "/public/log/" + files[i], cb); }
+    res.end();
+  });
+
+  app.get("/secure/zoneStatus", function (req, res) {
+    res.write(JSON.stringify(global.zoneStatus));
     res.end();
   });
 };

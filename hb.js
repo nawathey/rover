@@ -5,10 +5,12 @@
 
 (function () {
   var SerialPort, sp, buf = "", statusCB;
+
+  global.roverConnected = false;
   try {
     SerialPort = require("serialport").SerialPort;
   } catch (e) {
-    console.log("serial port module not found, HandyBoard interface disabled.");
+    console.log("serialport module not found, rover interface disabled.");
     return;
   }
   sp = new SerialPort("/dev/ttyUSB0", { baudrate: 9600 });
@@ -28,16 +30,17 @@
   }
 
   sp.on("data", function (data) {
-    console.log("hb: serial data:" + data.toString());
+    console.log("hb: got serial data:" + data.toString());
     buf = buf + data;
     getBatteryLevel();
   });
 
   sp.on("error", function (err) {
-    console.log("hb: serial error:" + err);
+    console.log("hb: serial port error, no rover: " + JSON.stringify(err));
   });
 
   sp.on("open", function (err) {
+    global.roverConnected = true;
     console.log("hb: serial port opened");
     sp.write("a");
   });
