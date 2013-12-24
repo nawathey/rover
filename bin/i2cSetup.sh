@@ -20,9 +20,10 @@ export MCP23017_BUS=1 \
         MCP23017_GPPUB=0x0D \
         MCP23017_INTFB=0x0F \
         MCP23017_INTCAPB=0x11 \
-        MCP23017_GPIOB=0x13 
+        MCP23017_GPIOB=0x13 \
+        MCP23017_OLATB=0x14
 
-i2cset -y $BUS $CHIP $MCP23017_IODIRA 0xFE # setup 6 input and 1 output
-i2cset -y $BUS $CHIP $MCP23017_IODIRB 0xFF # setup 8 input
-i2cset -y $BUS $CHIP $MCP23017_GPPUA 0xFE # enable weak pull-up resistors
-i2cset -y $BUS $CHIP $MCP23017_GPPUB 0xFF # enable weak pull-up resistors
+i2cset -y $MCP23017_BUS $MCP23017_CHIP $MCP23017_IODIRA 0xFE # setup 6 input and 1 output
+i2cset -y $MCP23017_BUS $MCP23017_CHIP $MCP23017_IODIRB 0xFF # setup 8 input
+i2cset -y $MCP23017_BUS $MCP23017_CHIP $MCP23017_GPPUA 0xFE # enable weak pull-up resistors
+i2cset -y $MCP23017_BUS $MCP23017_CHIP $MCP23017_GPPUB 0xFF # enable weak pull-up resistors

@@ -1,4 +1,4 @@
-!/opt/node/bin/node
+#!/opt/node/bin/node
 /*jslint node: true, indent: 2*/
 "use strict";
 
@@ -32,11 +32,23 @@ var
   MCP23017_GPIOB = 0x13,
   MCP23017_OLATB = 0x15;
 
+function read() {
+  wire.readBytes(MCP23017_GPIOA, 2, function (err, res) {
+    if (err !== null) {
+      console.log('error on read ' + JSON.stringify(err));
+    } else {
+      console.log('read: ' + JSON.stringify(res));
+    }
+  });
+}
+
 function blink() {
   wire.writeBytes(MCP23017_OLATA, [val], function (err) {
     if (err !== null) {
-      console.log('error on write ' + err);
+      console.log('error on write ' + JSON.stringify(err));
     } else {
+      console.log('val = ' + val);
+      read();
       val += 1;
       if (val > 3) { val = 0; }
       setTimeout(blink, 500);
