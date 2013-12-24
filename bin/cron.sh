@@ -18,7 +18,7 @@ gpio mode 0 output
                 then    (while :; do gpio write 0 1; sleep .1; gpio write 0 0; sleep .1; done) &
                         halt
                 fi
-                sleep 1
+                sleep .5
         done 
 ) &
 
@@ -41,7 +41,7 @@ gpio mode 0 output
                         sudo ifup wlan0
                 fi
                 rm -f $TMP
-                sleep 60
+                sleep 30
         done
 ) &
 
@@ -56,6 +56,6 @@ gpio mode 0 output
                        echo $(date) deleted $f >> $DIR/delete.log
                        rm -f "$f"
                 done
-                sleep 600
+                sleep 120
         done
 ) &

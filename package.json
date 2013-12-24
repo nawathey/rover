@@ -12,7 +12,8 @@
       "jade" : "*", 
       "socket.io": "*", 
       "serialport" : "*", 
-      "gpio" : "*"
+      "gpio" : "*",
+      "i2c" : "*"
   },
   "repository": {
     "type": "git",
