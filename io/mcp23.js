@@ -1,5 +1,5 @@
 #!/opt/node/bin/node
-/*jslint node: true, indent: 2, nomen: true */
+/*jslint node: true, indent: 2*/
 "use strict";
 
 // test of i2c package: https://npmjs.org/package/i2c
