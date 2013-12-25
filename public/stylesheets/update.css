@@ -1,0 +1,6 @@
+form * { margin-left: 10px; }
+
+#name { width: 100px; }
+#comment { width: 500px; }
+
+#result { margin: 50px; }

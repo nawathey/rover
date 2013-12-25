@@ -1,0 +1,27 @@
+extends roverLayout
+
+block moreStyles
+  link(rel="stylesheet" href="/stylesheets/update.css")
+
+block bodyContent
+  .jumbotron Status Update
+  form.form-inline
+    .form-group
+      label.sr-only(for="name") Component
+      input.form-control#name(placeholder="Name")
+    .form-group
+      label.sr-only(for="updown") Status
+      select.form-control#updown
+         option Up
+         option Down
+         option Warning
+    .form-group
+      label.sr-only(for="comment") Comment
+      input.form-control#comment(placeholder="Comment");
+    .form-group
+      button.btn.btn-primary#submit(disabled) Update
+  pre.prettyprint#result
+
+block moreScripts
+  script(src="/javascripts/update.js")
+  //- script(src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js")
