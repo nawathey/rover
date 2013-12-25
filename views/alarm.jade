@@ -4,10 +4,23 @@ block moreStyles
   link(rel='stylesheet', href='/stylesheets/alarm.css')
 
 block bodyContent
-  p.jumbotron Home Alarm Status - #{alarmStatus}
+  .jumbotron Home Alarm Status - #{alarmStatus}
     button#armButton.btn.btn-danger Arm System
-  #zones
-  #pics
+  #status
+    each row, i in layoutGrid
+      each col in row
+        div.status(id=col)= col
+      br
+  #msg
+    img#heartIcon(src="/images/message.png" alt="message icon" title="click to view msg")
+    | Message [
+    span#lastMsgNum
+    | ]&nbsp;
+    span#ago
+    | at&nbsp;
+    span#lastMsgTime
+  #activityLog
 
 block moreScripts
-  script(type='text/javascript', src='/javascripts/alarm.js')
+  script(type='text/javascript', src='/socket.io/socket.io.js')
+  script(type='text/javascript', src='/javascripts/refresh.js')

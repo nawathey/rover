@@ -8,6 +8,7 @@ try {
     direction: "out",
     interval: 200,
   });
+  g17.reset();
   module.exports = function (io) {
     setInterval(function () {
       var n = Object.keys(io.sockets.manager.connected).length;
@@ -18,7 +19,7 @@ try {
     }, 1000);
   };
 } catch (e) {
-  module.exports = function (io) {
-    console.log("running without gpio module, monitoring disabled");
-  };
+  g17 = null;
+  console.log("gpio setup error: " + JSON.stringify(e) + ", monitor of handyboard disabled");
+  module.exports = function (io) {};
 }

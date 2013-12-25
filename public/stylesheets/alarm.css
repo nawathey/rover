@@ -4,4 +4,53 @@
  top: 6px;
 }
 
-#zones { display: none; }
+.hasDep { border: solid #555 !important; }
+.hasDep:hover, :focus {
+  cursor: pointer;
+}
+
+.status {
+  color: lightgrey;
+  background: darkgrey;
+  display: inline-block;
+  margin: 5px;
+  padding: 5px 20px; /* top/bottom left/right */
+  border: 4px;
+  border-radius: 5px;
+}
+.up { color: white; background: green; }
+.down { color: white; background: red; }
+.warning { color: black; background: yellow; }
+
+#heartIcon { 
+  cursor: pointer;
+  height : 30px; 
+  margin: 10px;
+}
+
+#ago { font-weight: bold }
+
+#msg { 
+  width: 100%;
+  text-align: left;
+  display: inline-block 
+}
+
+.slider { 
+  position: absolute;
+  right: 10px;
+  margin-top: 12px;
+}
+
+#activityLog {  
+  display: block;
+  text-align: left;
+  background-color: grey;  
+  padding: 10px;  
+  margin-left: 50px;
+  font-family: "Lucida Console";
+  font-size: smaller;
+  width: 90%;
+  max-height: 400px;
+  overflow: scroll;
+}  

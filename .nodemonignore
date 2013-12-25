@@ -1,6 +1,7 @@
 /.git/*
 /vendor/*
 /public/*
+*.json
 *.jade
 *.md
 *.css

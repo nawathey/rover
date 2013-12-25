@@ -63,10 +63,6 @@ app.configure("production", function () {
   app.use(express.errorHandler());
 });
 
-require("../node-login/app/server/router")(app);
-
-require("./router.js")(app);
-
 var proxy = require("./proxy.js");
 proxy.use(http);
 app.get("/secure/still", proxy.still);
@@ -77,10 +73,13 @@ var hb = require("./hb.js");
 app.get("/secure/hb", function (req, res, hb) { // for debugging only
   res.send(hb.rover(url.parse(req.url, true).query.cmd));
 });
-var hbSio = require("./hbSio.js")(server, hb);
-require("./monitorDriver.js")(hbSio);
+var sio = require("./sio.js")(server, hb);
+require("./monitorDriver.js")(sio);
 
-// alarm monitor
+// custom routers
+require("../node-login/app/server/router")(app);
+require("./router.js")(app);
+require("./alarmRouter.js")(app, sio);
 require("./monitorAlarm.js")();
 
 // custom Page not found error
