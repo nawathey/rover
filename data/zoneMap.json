@@ -1,1 +1,1 @@
-[[{"name":"PA0"},{"name":"PA1"},{"name":"PA2"},{"name":"PA3"},{"name":"PA4"},{"name":"PA5"},{"name":"PA6"}],[{"name":"PB0"},{"name":"PB1"},{"name":"PB2"},{"name":"PB3"},{"name":"PB4"},{"name":"PB5"},{"name":"PB6"},{"name":"PB7"}]]
+[[{"name":""},{"name":"PA1","norm":1},{"name":"PA2","norm":1},{"name":"PA3"},{"name":"PA4"},{"name":"PA5"},{"name":"PA6"},{"name":"PA7"}],[{"name":"PB0"},{"name":"PB1"},{"name":"PB2"},{"name":"PB3","norm":1},{"name":"PB4","norm":1},{"name":"PB5","norm":1},{"name":"PB6","norm":1},{"name":"PB7","norm":1}]]

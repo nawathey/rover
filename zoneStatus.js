@@ -30,20 +30,20 @@ function processUpdate(name, st, portValue, bit) {
 /*jslint bitwise: true*/
 function valueToStatus(val, bit, norm) {
   var v = (val & (1 << bit)) !== 0 ? 1 : 0;
-  console.log("val=" + val + ",bit=" + bit + ",norm=" + norm + "=" + v);
+  //console.log("val=" + val + ",bit=" + bit + ",norm=" + norm + "=" + v);
   return ((norm === v) ? "up" : "down");
 }
 /*jslint bitwise: false*/
 
 exports.processReading = function (portValues) {
   var p, i, v, st;
-  console.log("procesReading: " + portValues);
+  // console.log("procesReading: " + JSON.stringify(portValues));
   for (p = 0; p < portValues.length; p += 1) {
     for (i = 0; i < 8; i += 1) {
       v = zoneMap[p][i];
       //console.log("zoneMap " + p + "," + i + ":" + JSON.stringify(v));
       if (v && v.name) {
-        st = valueToStatus(portValues[p], i, v.normal || 1);
+        st = valueToStatus(portValues[p], i, v.norm || 0); // default normal is 0
         if (v.stat !== st) {
           v.stat = st;
           processUpdate(v.name, st, portValues[p], i);

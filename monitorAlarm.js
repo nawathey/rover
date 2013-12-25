@@ -17,7 +17,6 @@ function blink(wire, val) {
 }
 
 function readPorts(wire) {
-  blink(wire, 1);
   wire.readBytes(process.env.MCP23017_GPIOA, 2, function (err, res) {
     if (err !== null) {
       console.log("error on readBytes: " + JSON.stringify(err));
@@ -25,6 +24,7 @@ function readPorts(wire) {
       zs.processReading(res);
     }
   });
+  blink(wire, 1);
 }
 
 function readRandom() {
@@ -41,7 +41,7 @@ try {
 
   module.exports = function () {
     console.log("start monitoring alarms with option: " + JSON.stringify(opt));
-    setInterval(readPorts, 500);
+    setInterval(function () { readPorts(wire); }, 500);
   };
 
 } catch (e) {
